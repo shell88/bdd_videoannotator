@@ -12,7 +12,7 @@
 	<developers>
 		<developer>
 			<name>Stefan Hell</name>
-			<email>stefan.hell@gmail.com</email>
+			<email>stefan.hell88@gmail.com</email>
 		</developer>
 	</developers>
 	<licenses>
@@ -54,13 +54,12 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<!-- License LGPL 3.0 -->
 			<groupId>com.pojosontheweb</groupId>
 			<artifactId>monte-repack</artifactId>
 			<version>1.0.1</version>
 		</dependency>
 		<dependency>
-			<!-- Currently only used for stringifying Datatables Apache Licence -->
+			<!-- Currently only used for stringifying Datatables-->
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.4</version>
@@ -104,36 +103,6 @@
 					<useFile>false</useFile>
 				</configuration>
 			</plugin>
-			<!-- generate eaf package from xml schema 
-			     As schema will not change regeneration of this code would be useless.
-			     Therefore it is not part of the build-lifecycle. 
-			<plugin>
-				<groupId>org.jvnet.jaxb2.maven2</groupId>
-				<artifactId>maven-jaxb2-plugin</artifactId>
-				<version>0.12.0</version>
-				<executions>
-					<execution>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-						<configuration>
-							<locale>en</locale>
-							<schemaDirectory>${basedir}</schemaDirectory>
-							<schemaIncludes>
-								<include>EAF.xsd</include>
-							</schemaIncludes>
-							<generateDirectory>${basedir}/src/main/java</generateDirectory>
-							<generatePackage>com.github.shell88.bddvideoannotator.eaf</generatePackage>
-							<encoding>${project.build.sourceEncoding}</encoding>
-							<cleanPackageDirectories>true</cleanPackageDirectories>
-							<markGenerated>true</markGenerated>
-							<packageLevelAnnotations>true</packageLevelAnnotations> 
-							<verbose>true</verbose>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-            -->
 			<!-- Generating WSDL File -->
 			<plugin>
 				<groupId>org.jvnet.jax-ws-commons</groupId>
