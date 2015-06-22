@@ -2,6 +2,7 @@
 .settings
 .project
 .classpath
+.metadata
 
 #Build directories
 target/
