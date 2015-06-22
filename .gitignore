@@ -7,12 +7,15 @@
 #Build directories
 target/
 test_output/
+vendor/
+bin/
 
 #others
 pom.xml.tag
 pom.xml.releaseBackup
 pom.xml.versionsBackup
 pom.xml.next
+composer.lock
 release.properties
 dependency-reduced-pom.xml
 buildNumber.properties
