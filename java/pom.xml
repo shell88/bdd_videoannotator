@@ -8,13 +8,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<name>${project.groupId}:${project.artifactId}</name>
-	<description>BDD Videoannotator enables BDD-Frameworks like Cucumber-JVM to capture testruns with an annotated screencast. To support different BDD-Frameworks BDD-Videoannotator conists of a SOAP-based server component and a clientside adapter.</description>
-	<developers>
-		<developer>
-			<name>Stefan Hell</name>
-			<email>stefan88hell@gmail.com</email>
-		</developer>
-	</developers>
+	<description>Java-Adapters for using bdd_videoannotator-server on java-based BDD-Frameworks.</description>
 	<licenses>
 		<license>
 			<name>The Apache Software License, Version 2.0</name>
@@ -22,6 +16,21 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
+	<developers>
+		<developer>
+			<name>Stefan Hell</name>
+			<email>stefan88hell@gmail.com</email>
+		</developer>
+	</developers>
+	<scm>
+		<connection>scm:git:https://github.com/shell88/bdd_videoannotator.git</connection>
+		<developerConnection>scm:git:https://github.com/shell88/bdd_videoannotator.git</developerConnection>
+		<url>https://github.com/shell88/bdd_videoannotator</url>
+	</scm>
+	<issueManagement>
+		<system>GitHub Issues</system>
+		<url>https://github.com/shell88/bdd_videoannotator/issues</url>
+	</issueManagement>
 	<dependencies>
 		<dependency>
 			<groupId>info.cukes</groupId>
@@ -190,7 +199,7 @@
 						<phase>verify</phase>
 						<goals>
 							<goal>sign</goal>
-						</goals>		
+						</goals>
 					</execution>
 				</executions>
 			</plugin>

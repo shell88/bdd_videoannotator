@@ -22,6 +22,15 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
+	<scm>
+		<connection>scm:git:https://github.com/shell88/bdd_videoannotator.git</connection>
+		<developerConnection>scm:git:https://github.com/shell88/bdd_videoannotator.git</developerConnection>
+		<url>https://github.com/shell88/bdd_videoannotator</url>
+	</scm>
+	<issueManagement>
+		<system>GitHub Issues</system>
+		<url>https://github.com/shell88/bdd_videoannotator/issues</url>
+	</issueManagement>
 	<dependencies>
 		<dependency>
 			<groupId>info.cukes</groupId>
