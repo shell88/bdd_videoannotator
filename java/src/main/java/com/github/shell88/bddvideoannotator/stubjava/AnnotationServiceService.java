@@ -17,7 +17,7 @@ import javax.xml.ws.WebServiceFeature;
  * Generated source version: 2.2
  * 
  */
-@WebServiceClient(name = "AnnotationServiceService", targetNamespace = "http://service.bddvideoannotator.shell88.github.com/", wsdlLocation = "file:/C:/Users/Hell/workspace_videoannotator/java-adapter/target/wsdl/META-INF/wsdl/AnnotationServiceService.wsdl")
+@WebServiceClient(name = "AnnotationServiceService", targetNamespace = "http://service.bddvideoannotator.shell88.github.com/", wsdlLocation = "file:/C:/Users/Hell/github/bdd_videoannotator/java/target/wsdl/META-INF/wsdl/AnnotationServiceService.wsdl")
 public class AnnotationServiceService
     extends Service
 {
@@ -30,7 +30,7 @@ public class AnnotationServiceService
         URL url = null;
         WebServiceException e = null;
         try {
-            url = new URL("file:/C:/Users/Hell/workspace_videoannotator/java-adapter/target/wsdl/META-INF/wsdl/AnnotationServiceService.wsdl");
+            url = new URL("file:/C:/Users/Hell/github/bdd_videoannotator/java/target/wsdl/META-INF/wsdl/AnnotationServiceService.wsdl");
         } catch (MalformedURLException ex) {
             e = new WebServiceException(ex);
         }

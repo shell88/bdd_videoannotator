@@ -6,16 +6,15 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static stepdef.helper.AssertExtensions.assertActualResultStepEquals;
 import static stepdef.helper.AssertExtensions.assertDurationEquals;
-
 import stepdef.helper.TestUtils;
-
 import stepdef.helper.annotationfileparser.AnnotationFileParserFactory;
 import stepdef.helper.annotationfileparser.ExpectedResultStep;
 import stepdef.helper.annotationfileparser.ResultStep;
 
+import com.github.shell88.bddvideoannotator.annotationexport.StepResult;
 import com.github.shell88.bddvideoannotator.service.AnnotationService;
-import com.github.shell88.bddvideoannotator.service.StepResult;
 import com.xuggle.xuggler.IContainer;
+
 import cucumber.api.DataTable;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;

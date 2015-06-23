@@ -2,6 +2,8 @@ package com.github.shell88.bddvideoannotator.service;
 
 import com.github.shell88.bddvideoannotator.annotationexport.AnnotationExporter;
 import com.github.shell88.bddvideoannotator.annotationexport.EafAnnotationExport;
+import com.github.shell88.bddvideoannotator.annotationexport.StepAnnotation;
+import com.github.shell88.bddvideoannotator.annotationexport.StepResult;
 import com.github.shell88.bddvideoannotator.videorecorder.MonteVideoRecorderAdapter;
 import com.github.shell88.bddvideoannotator.videorecorder.VideoRecorder;
 

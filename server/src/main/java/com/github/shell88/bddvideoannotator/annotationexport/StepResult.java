@@ -1,4 +1,4 @@
-package com.github.shell88.bddvideoannotator.service;
+package com.github.shell88.bddvideoannotator.annotationexport;
 
 /**
  * BDD-Frameworks represent results in different ways. Annotation-Service will

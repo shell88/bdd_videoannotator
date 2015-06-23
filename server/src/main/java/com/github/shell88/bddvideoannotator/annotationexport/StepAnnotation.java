@@ -1,4 +1,4 @@
-package com.github.shell88.bddvideoannotator.service;
+package com.github.shell88.bddvideoannotator.annotationexport;
 
 /**
  * Represents an annotation for an executed Gherkin-step.

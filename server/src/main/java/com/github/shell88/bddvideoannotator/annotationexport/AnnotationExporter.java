@@ -1,7 +1,6 @@
 package com.github.shell88.bddvideoannotator.annotationexport;
 
 import com.github.shell88.bddvideoannotator.service.Helper;
-import com.github.shell88.bddvideoannotator.service.StepAnnotation;
 
 import java.io.File;
 

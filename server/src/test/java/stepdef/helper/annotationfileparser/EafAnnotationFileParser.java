@@ -1,6 +1,6 @@
 package stepdef.helper.annotationfileparser;
 
-import com.github.shell88.bddvideoannotator.service.StepResult;
+import com.github.shell88.bddvideoannotator.annotationexport.StepResult;
 
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;

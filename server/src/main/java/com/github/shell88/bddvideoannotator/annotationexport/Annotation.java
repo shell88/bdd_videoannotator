@@ -1,4 +1,4 @@
-package com.github.shell88.bddvideoannotator.service;
+package com.github.shell88.bddvideoannotator.annotationexport;
 
 /**
  * An Annotation is a represented as a time_referenced (milliseconds_from -

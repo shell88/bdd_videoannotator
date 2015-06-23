@@ -1,6 +1,6 @@
 package stepdef.helper.annotationfileparser;
 
-import com.github.shell88.bddvideoannotator.service.StepResult;
+import com.github.shell88.bddvideoannotator.annotationexport.StepResult;
 
 import java.util.ArrayList;
 import java.util.List;
