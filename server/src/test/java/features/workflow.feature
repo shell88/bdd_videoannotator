@@ -7,11 +7,13 @@ Feature: To support a wide range of BDD-frameworks a platform independent server
     When I add a Step "hello step",
     And I add a Step "hello step2",
     And I add the result "SUCCESS",
-    And I add the result "SUCCESS",
+    And I add the result "FAILURE",
     And I stop the Scenario
     Then I should get a video with file named "HelloScenario"
-    And I should get an annotation file named "HelloScenario" containing the added steps
-
+    And I should get an annotation file named "HelloScenario",
+    And the annotation file should contain steptext "hello step" with result "SUCCESS"
+    And the annotation file should contain steptext "hello step2" with result "FAILURE"
+    
   Scenario: AddResultsDirectly
     Given I start a Scenario with description text "HelloScenario"
     When I add a Step "hello step" with result "SUCCESS" after 3 Seconds,

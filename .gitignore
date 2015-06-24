@@ -3,6 +3,7 @@
 .project
 .classpath
 .metadata
+.recommenders
 
 #Build directories
 target/
