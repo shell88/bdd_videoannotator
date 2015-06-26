@@ -22,7 +22,7 @@ import java.util.List;
 
 /**
  * BDD-videoannotator-Formatter for Cucumber-JVM. Can be used through the
- * command line option -f com.github.shell88.javaadapters.CucumberReportingAdapter
+ * command line option --plugin using the fully qualified Classname of this Class.
  * 
  * @author Hell
  */
