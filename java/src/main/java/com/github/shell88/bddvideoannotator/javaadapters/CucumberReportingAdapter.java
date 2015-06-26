@@ -94,7 +94,9 @@ public class CucumberReportingAdapter implements Reporter, Formatter {
    *   Adds the step to the stepBuffer on the server.
    */
   public void step(Step step) {
-    // class cucumber.runtime.model.ExampleStep is not visible
+
+   //FIXME Problem with Background Steps in ScenarioOutlines
+   // class cucumber.runtime.model.ExampleStep is not visible
     if (currentScenarioOutline != null
         && !(step.getClass().getSimpleName().equalsIgnoreCase("ExampleStep"))) {
       return;
