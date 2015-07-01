@@ -33,6 +33,7 @@ public class CucumberReportingAdapter implements Reporter, Formatter {
   /** Saved when current Scenario is a ScenarioOutline 
    * to summarize Scenarios to a single file.*/
   private ScenarioOutline currentScenarioOutline;
+  private boolean scenarioStarted = false;
   
   /**
    * @throws Throwable errors while reading propertiesFile or
@@ -60,6 +61,7 @@ public class CucumberReportingAdapter implements Reporter, Formatter {
   }
 
   public void uri(String uri) {
+	 
   }
 
   public void feature(Feature feature) {
@@ -68,7 +70,6 @@ public class CucumberReportingAdapter implements Reporter, Formatter {
 
   public void scenarioOutline(ScenarioOutline scenarioOutline) {
     this.currentScenarioOutline = scenarioOutline;
-
   }
 
   public void examples(Examples examples) {
@@ -81,6 +82,7 @@ public class CucumberReportingAdapter implements Reporter, Formatter {
   public void startOfScenarioLifeCycle(Scenario scenario) {
     // consecutive calls to startScenario will be ignored by the server
     client.startScenario(scenario.getName());
+    scenarioStarted = true;
   }
 
   public void background(Background background) {
@@ -94,11 +96,8 @@ public class CucumberReportingAdapter implements Reporter, Formatter {
    *   Adds the step to the stepBuffer on the server.
    */
   public void step(Step step) {
-
-   //FIXME Problem with Background Steps in ScenarioOutlines
-   // class cucumber.runtime.model.ExampleStep is not visible
-    if (currentScenarioOutline != null
-        && !(step.getClass().getSimpleName().equalsIgnoreCase("ExampleStep"))) {
+    // Needed in for scenarioOutlines
+    if (!this.scenarioStarted) {
       return;
     }
     client.addStepToBuffer(step.getKeyword() + step.getName(),
@@ -119,6 +118,7 @@ public class CucumberReportingAdapter implements Reporter, Formatter {
     }
     client.stopScenario();
     currentScenarioOutline = null;
+    scenarioStarted = false;
   }
   
   /**

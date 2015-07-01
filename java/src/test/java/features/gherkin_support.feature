@@ -42,6 +42,11 @@ Feature: In order to support Cucumber-JVM, an easy to use adapter should be prov
     And I have a feature file:
       """
       Feature: test
+      
+      Background: testbackground
+      Given I have a backgroundstep
+      And a second backgroundstep
+      
       Scenario Outline: Test
       Given I have a step with <value1> and <value2>
       Examples:
@@ -52,9 +57,13 @@ Feature: In order to support Cucumber-JVM, an easy to use adapter should be prov
     When I run Cucumber-JVM
     Then the Adapter should send following steps for the scenario "Test":
       """
+      Given I have a backgroundstep
+      And a second backgroundstep
       Given I have a step with "Test1-1" and "Test1-2"
+      Given I have a backgroundstep
+      And a second backgroundstep
       Given I have a step with "Test2-1" and "Test2-2"
-      """
+      """    
 
   Scenario: Datatables
     Given i have an instance of the BDD-Adapter for Cucumber-JVM with a mocked server connection
