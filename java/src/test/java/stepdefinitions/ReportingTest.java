@@ -3,7 +3,10 @@ package stepdefinitions;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -12,6 +15,7 @@ import static org.mockito.Mockito.when;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.mockito.ArgumentCaptor;
+import org.mockito.InOrder;
 
 import stepdef.helper.TestUtils;
 import stepdef.subtest.CucumberSubTestThreadWithAdapterInstance;
@@ -46,6 +50,7 @@ public class ReportingTest {
     when(mockedServerConnector.startServerProcess()).thenReturn(mockedClient);
     when(mockedServerConnector.getJavaClient()).thenReturn(mockedClient);
     mockedAdapter = new CucumberReportingAdapter(mockedServerConnector);
+   
   }
 
   @Given("^I have a feature file:$")
@@ -92,32 +97,31 @@ public class ReportingTest {
   @Then("^the Adapter should send following steps for the scenario \"(.*?)\":$")
   public void the_Adapter_should_send_following_steps_for_the_scenario(
       String scenarioName, String stepList) throws Throwable {
-
-    the_Adapter_should_start_the_scenario(scenarioName);
+    InOrder orderedVerifier = inOrder(mockedClient);
+    orderedVerifier.verify(mockedClient).startScenario(
+        scenarioName);
+    
     expectedSteps = stepList.split("\n");
-
-    ArgumentCaptor<String> stepsCaptured = ArgumentCaptor
-        .forClass(String.class);
-
-    verify(mockedClient, atLeastOnce()).addStepToBuffer(
-        stepsCaptured.capture(), any(StringArrayArray.class));
-
+    
     for (int i = 0; i < expectedSteps.length; i++) {
       expectedSteps[i] = expectedSteps[i].trim();
-      assertEquals(expectedSteps[i], stepsCaptured.getAllValues().get(i));
+      orderedVerifier.verify(mockedClient).addStepToBuffer(eq(expectedSteps[i]),
+              any(StringArrayArray.class));
     }
-
+    orderedVerifier.verify(mockedClient).stopScenario();
   }
 
-  @Then("^the Adapter should start the scenario \"(.*?)\"$")
-  public void the_Adapter_should_start_the_scenario(String scenarioName)
+  @Then("^the Adapter should report the scenario \"(.*?)\"$")
+  public void the_Adapter_should_report_the_scenario(String scenarioName)
       throws Throwable {
     /*
      * atLeastOnce(): for ScenarioOutlines the scenario will transmitted twice
      * but ignored the second time from the server (desired behaviour)
      */
     verify(mockedClient, atLeastOnce()).startScenario(scenarioName);
+    verify(mockedClient, times(1)).stopScenario();
   }
+  
 
   @Then("^the Adapter should send the steptext: \"(.*?)\" with the datatable at position (\\d+)$")
   public void the_Adapter_should_send_the_steptext_with_the_datatable(
@@ -132,8 +136,9 @@ public class ReportingTest {
     // structure
     verify(mockedClient, atLeastOnce()).addStepToBuffer(capturedStep.capture(),
         capturedDatatable.capture());
-    assertEquals(steptext, capturedStep.getAllValues().get(position));
 
+    assertEquals(steptext, capturedStep.getAllValues().get(position));
+      
     String[] lines = datatable.split("\n");
     List<StringArray> deliveredDatatable = capturedDatatable.getAllValues()
         .get(position).getItem();
@@ -148,9 +153,7 @@ public class ReportingTest {
         assertEquals(expected.get(j).trim(), rowEntriesCaptured.get(j - 1)
             .trim());
       }
-
-    }
-
+    }   
   }
 
   @Then("^the Adapter should send \"(.*?)\" for all steps to the server$")

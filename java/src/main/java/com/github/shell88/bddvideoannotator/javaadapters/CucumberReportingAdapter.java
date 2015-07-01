@@ -32,8 +32,9 @@ public class CucumberReportingAdapter implements Reporter, Formatter {
   private static AnnotationService client;
   /** Saved when current Scenario is a ScenarioOutline 
    * to summarize Scenarios to a single file.*/
-  private ScenarioOutline currentScenarioOutline;
+  private String lastExampleId = null;
   private boolean scenarioStarted = false;
+
   
   /**
    * @throws Throwable errors while reading propertiesFile or
@@ -61,7 +62,6 @@ public class CucumberReportingAdapter implements Reporter, Formatter {
   }
 
   public void uri(String uri) {
-	 
   }
 
   public void feature(Feature feature) {
@@ -69,11 +69,10 @@ public class CucumberReportingAdapter implements Reporter, Formatter {
   }
 
   public void scenarioOutline(ScenarioOutline scenarioOutline) {
-    this.currentScenarioOutline = scenarioOutline;
   }
 
   public void examples(Examples examples) {
-
+    this.lastExampleId = examples.getRows().get(examples.getRows().size() - 1).getId();
   }
 
   /**
@@ -108,31 +107,17 @@ public class CucumberReportingAdapter implements Reporter, Formatter {
    * Stops the scenario on the server (not scenario outlines).
    */
   public void endOfScenarioLifeCycle(Scenario scenario) {
-
+   
     // Collect Scenario-Outline to single Scenario
-    if (currentScenarioOutline != null) {
-      if (scenario.getId().contains(this.currentScenarioOutline.getId())) {
-        return;
-      }
-
+    if (this.lastExampleId != null && this.lastExampleId != scenario.getId()) {
+      return;
     }
     client.stopScenario();
-    currentScenarioOutline = null;
     scenarioStarted = false;
+    this.lastExampleId = null;
   }
-  
-  /**
-   *  Stops the scenario (only scenarioOutlines)
-   *  on the server.
-   */
+
   public void done() {
-
-    // only necessary when no Scenario follows after a ScenarioOutline
-    if (currentScenarioOutline != null) {
-      client.stopScenario();
-
-
-    }
 
   }
 

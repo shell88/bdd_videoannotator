@@ -64,6 +64,36 @@ Feature: In order to support Cucumber-JVM, an easy to use adapter should be prov
       And a second backgroundstep
       Given I have a step with "Test2-1" and "Test2-2"
       """    
+   
+  Scenario: Feature-File with Scenario and ScenarioOutline
+   Given i have an instance of the BDD-Adapter for Cucumber-JVM with a mocked server connection
+   And I have a feature file:
+      """
+      Feature: test
+      
+      Scenario Outline: AnExampleScenario
+      Given I have a step with <value1> and <value2>
+      Examples:
+      |value1     | value2   |
+      |"Test1-1"  | "Test1-2"|
+      |"Test2-1"  | "Test2-2"|
+      
+      Scenario: AnotherScenario
+      Given I have a scenario with a step
+      And there is also a second step
+      """
+   When I run Cucumber-JVM
+   Then the Adapter should send following steps for the scenario "AnExampleScenario":
+      """
+      Given I have a step with "Test1-1" and "Test1-2"
+      Given I have a step with "Test2-1" and "Test2-2"
+      """    
+   And the Adapter should send following steps for the scenario "AnotherScenario":
+     """
+     Given I have a scenario with a step
+     And there is also a second step
+     """
+
 
   Scenario: Datatables
     Given i have an instance of the BDD-Adapter for Cucumber-JVM with a mocked server connection
@@ -80,7 +110,7 @@ Feature: In order to support Cucumber-JVM, an easy to use adapter should be prov
       |1            |"String"   |
       """
     When I run Cucumber-JVM
-    Then the Adapter should start the scenario "Test with datatable"
+    Then the Adapter should report the scenario "Test with datatable"
     And the Adapter should send the steptext: "Given I have a step with a datatable:" with the datatable at position 1
       """
       |Col1         |Col2       |
@@ -113,6 +143,6 @@ Feature: In order to support Cucumber-JVM, an easy to use adapter should be prov
       public void i_have_a_samplestep(){}
       """
     When I run Cucumber-JVM
-    Then the Adapter should start the scenario "testhook"
+    Then the Adapter should report the scenario "testhook"
     And the Adapter should send the step "beforeHook" with Result "SUCCESS"
     And the Adapter should send the step "afterHook" with Result "SUCCESS"
