@@ -2,8 +2,6 @@ package stepdefinitions;
 
 import static org.junit.Assert.assertFalse;
 
-import java.io.File;
-
 import com.github.shell88.bddvideoannotator.javaadapters.ServerConnector;
 
 import cucumber.api.java.en.Given;

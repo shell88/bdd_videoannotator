@@ -2,6 +2,7 @@ package stepdefinitions;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
+
 import gherkin.formatter.model.Result;
 
 import com.github.shell88.bddvideoannotator.javaadapters.CucumberReportingAdapter;
