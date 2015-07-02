@@ -31,7 +31,7 @@ public class StepDef {
   
   @Given("^i open Google$")
   public void i_open_Google() throws Throwable {
-      webdriver.get("http://www.google.de"); 
+      webdriver.get("http://www.google.com"); 
   }
 
   @When("^i search for \"(.*?)\",$")

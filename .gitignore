@@ -3,11 +3,13 @@
 .project
 .classpath
 .metadata
+.buildpath
 .recommenders
 
 #Build directories
 target/
 test_output/
+output_bddvideoannotator/
 vendor/
 bin/
 
