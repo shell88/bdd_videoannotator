@@ -53,7 +53,6 @@
 			<version>1.0.1</version>
 		</dependency>
 		<dependency>
-			<!-- Currently only used for stringifying Datatables -->
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.4</version>
@@ -96,110 +95,6 @@
 					<useFile>false</useFile>
 				</configuration>
 			</plugin>
-			<!-- Generating WSDL File -->
-			<plugin>
-				<groupId>org.jvnet.jax-ws-commons</groupId>
-				<artifactId>jaxws-maven-plugin</artifactId>
-				<version>2.2</version>
-				<executions>
-					<execution>
-						<id>generate-wsdl</id>
-						<phase>process-classes</phase>
-						<goals>
-							<goal>wsgen</goal>
-						</goals>
-						<configuration>
-							<sei>com.github.shell88.bddvideoannotator.service.AnnotationService</sei>
-							<genWsdl>true</genWsdl>
-							<verbose>true</verbose>
-							<encoding>${project.build.sourceEncoding}</encoding>
-							<inlineSchemas>true</inlineSchemas>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
-			<!-- Delivers a single jar containing all dependencies to execute annotationService -->
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-shade-plugin</artifactId>
-				<version>2.3</version>
-				<executions>
-					<execution>
-						<phase>package</phase>
-						<goals>
-							<goal>shade</goal>
-						</goals>
-						<configuration>
-							<shadedArtifactAttached>true</shadedArtifactAttached>
-							<shadedClassifierName>standalone</shadedClassifierName>
-							<createDependencyReducedPom>false</createDependencyReducedPom>
-							<artifactSet>
-								<includes>
-									<include>com.pojosontheweb:monte-repack*</include>
-									<include>org.apache.commons:commons-lang3*</include>
-									<include>javax.media*</include>
-									<include>com.springsource.javax.media*</include>
-								</includes>
-							</artifactSet>
-							<transformers>
-								<transformer
-									implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>com.github.shell88.bddvideoannotator.service.AnnotationService</mainClass>
-								</transformer>
-							</transformers>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-source-plugin</artifactId>
-				<version>2.4</version>
-				<executions>
-					<execution>
-						<id>bind-sources</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-javadoc-plugin</artifactId>
-				<version>2.10.3</version>
-				<executions>
-					<execution>
-						<id>attach-javadocs</id>
-						<goals>
-							<goal>jar</goal>
-						</goals>
-						<configuration>
-							<charset>${project.build.sourceEncoding}</charset>
-							<show>private</show>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-gpg-plugin</artifactId>
-				<version>1.6</version>
-				<executions>
-					<execution>
-						<id>sign-artifacts</id>
-						<phase>verify</phase>
-						<goals>
-							<goal>sign</goal>
-						</goals>
-					</execution>
-				</executions>
-			</plugin>
-
 		</plugins>
 	</build>
 </project>

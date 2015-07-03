@@ -10,6 +10,7 @@
    	    "behat/mink": "*",
         "behat/mink-selenium2-driver":  "*",
         "behat/mink-extension": "*",
+        "netwing/selenium-server-standalone" : "*",
         "shell88/bdd_videoannotator": "dev-master"
     },
     "minimum-stability": "dev",
