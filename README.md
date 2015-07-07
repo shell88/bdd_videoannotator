@@ -13,6 +13,7 @@ Currently following BDD-Frameworks are supported:
 #Basic Usage
 BDD-Videoannotator will export a video file and a metadata-file containing the annotations (File extension ".eaf").
 To view the annotated video you have to open the ".eaf"-File with [ELAN](https://tla.mpi.nl/tools/tla-tools/elan/).
+![The outputlogfile opened in ELAN](http://shell88.github.io/bdd_videoannotator/images/screenshot_elan.PNG)
 
 #Issues
 To improve bdd_videoannotator please give your feedback by opening issues at the [Github Issue Tracker](https://github.com/shell88/bdd_videoannotator/issues).
