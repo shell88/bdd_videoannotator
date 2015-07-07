@@ -22,7 +22,8 @@ mvn install:install-file -Dfile=bdd-videoannotator-java-0.1.jar
 -Dversion=0.1-beta.1 -Dpackaging=JAR
 ```
 - Firefox Browser installed (Will be used by Selenium WebDriver; Tested Version 37.0.1)
-#Running
+
+# Running
 
 ```sh
 mvn clean test
