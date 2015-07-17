@@ -83,6 +83,23 @@ public class ReportingTest {
 
   }
 
+  @Given("^I have a feature file with a step \"(.*?)\" and a docstring \"(.*?)\"$")
+  public void i_have_a_feature_file_with_a_step_and_a_docstring(
+      String steptext, String docstring) throws Throwable {
+    String contentsFeatureFile = "Feature: test";
+    contentsFeatureFile += "\nScenario: test";
+    contentsFeatureFile += "\n" + steptext;
+    contentsFeatureFile += "\n\"\"\"\n" + docstring + "\n\"\"\"";
+    i_have_a_feature_file(contentsFeatureFile);
+  }
+
+  @Then("^the Adapter should report the step \"(.*?)\" with the docstring \"(.*?)\"$")
+  public void the_Adapter_should_report_the_step_with_the_docstring(
+      String steptext, String docstring) throws Throwable {
+    String verificationText = steptext + " \"\"\"" + docstring + "\"\"\"";
+    verify(mockedClient).addStepToBuffer(eq(verificationText), any(StringArrayArray.class));
+  }
+
   @When("^I run Cucumber-JVM$")
   public void i_run_Cucumber_JVM() throws Throwable {
     CucumberSubTestThreadWithAdapterInstance subTest = new CucumberSubTestThreadWithAdapterInstance(
@@ -177,7 +194,6 @@ public class ReportingTest {
     verify(mockedClient, atLeastOnce()).addStepWithResult(
         captureStepText.capture(), any(StringArrayArray.class),
         captureResult.capture());
-
   }
 
 }

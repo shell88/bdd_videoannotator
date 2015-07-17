@@ -5,6 +5,7 @@ import gherkin.formatter.Formatter;
 import gherkin.formatter.Reporter;
 import gherkin.formatter.model.Background;
 import gherkin.formatter.model.DataTableRow;
+import gherkin.formatter.model.DocString;
 import gherkin.formatter.model.Examples;
 import gherkin.formatter.model.Feature;
 import gherkin.formatter.model.Match;
@@ -99,7 +100,9 @@ public class CucumberReportingAdapter implements Reporter, Formatter {
     if (!this.scenarioStarted) {
       return;
     }
-    client.addStepToBuffer(step.getKeyword() + step.getName(),
+
+    client.addStepToBuffer(step.getKeyword() + step.getName()
+        + convertDocString(step.getDocString()),
         convertDataTableToStringArray(step.getRows()));
 
   }
@@ -205,6 +208,14 @@ public class CucumberReportingAdapter implements Reporter, Formatter {
       }
     }
     return tableToSend;
+  }
+  
+  public String convertDocString(DocString str) {
+    if (str == null || str.getValue() == null) {
+      return "";
+    }
+    return " \"\"\"" + str.getValue() + "\"\"\"";
+
   }
 
 }

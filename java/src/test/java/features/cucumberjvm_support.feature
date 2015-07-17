@@ -94,7 +94,6 @@ Feature: In order to support Cucumber-JVM, an easy to use adapter should be prov
      And there is also a second step
      """
 
-
   Scenario: Datatables
     Given i have an instance of the BDD-Adapter for Cucumber-JVM with a mocked server connection
     And I have a feature file:
@@ -122,7 +121,13 @@ Feature: In order to support Cucumber-JVM, an easy to use adapter should be prov
       |Col3         |Col4       |
       |1            |"String"   |
       """
-
+  Scenario: DocStrings
+   Given i have an instance of the BDD-Adapter for Cucumber-JVM with a mocked server connection
+   And I have a feature file with a step "Given I have a step" and a docstring "hello docstring"
+   When I run Cucumber-JVM
+   Then the Adapter should report the step "Given I have a step" with the docstring "hello docstring"
+   
+  
   Scenario: Hooks
     Given i have an instance of the BDD-Adapter for Cucumber-JVM with a mocked server connection
     And I have a feature file:
