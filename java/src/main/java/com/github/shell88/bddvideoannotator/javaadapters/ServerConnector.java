@@ -76,7 +76,7 @@ public class ServerConnector {
   }
 
   /**
-   * Starts the server in a seperate JVM-Process. A shutdown hook will be
+   * Starts the server in a separate JVM-Process. A shutdown hook will be
    * registered so that the JVM Process will be securely terminated when the
    * adapter ends.
    * 
@@ -115,25 +115,41 @@ public class ServerConnector {
     if (javaClient != null) {
       return javaClient;
     }
+    
+    URL connectionUrl;
     try {
-      javaClient = new AnnotationServiceService(new URL(getWsdlLoaction()))
-          .getAnnotationServicePort();
+      connectionUrl = new URL(getWsdlLocation());
     } catch (MalformedURLException e) {
       throw new ServerConnectorException("Problem with WSDL-Location "
-          + getWsdlLoaction(), e);
-    } catch (javax.xml.ws.WebServiceException e) {
-      /* Runtime Exception that is thrown when no server Connection is possible
-       * => add also ServerProcessErrorStream*/
-      throw new ServerConnectorException(
-          "Could not connect to server. Error Stream of Server: "
-              + convertStreamtoString(serverProcess.getErrorStream()), e);
+          + getWsdlLocation(), e);
     }
-    BindingProvider bindingProvider = (BindingProvider) javaClient;
-    bindingProvider.getRequestContext().put(
-        BindingProvider.ENDPOINT_ADDRESS_PROPERTY, getPublishingAddress());
+            
+    for (int retries = 0; retries < 3; retries++) {
+      try {
+        javaClient = new AnnotationServiceService(connectionUrl)
+            .getAnnotationServicePort();
+        BindingProvider bindingProvider = (BindingProvider) javaClient;
+        bindingProvider.getRequestContext().put(
+            BindingProvider.ENDPOINT_ADDRESS_PROPERTY, getPublishingAddress());
+        return javaClient;
+      } catch (javax.xml.ws.WebServiceException e) {
+        System.out.println("Trying to connect again, waiting 100 ms");
+        try {
+          Thread.sleep(100);
+        } catch (InterruptedException e1) {
+          e1.printStackTrace();
+        }
 
-    return javaClient;
+      }
+    }
+    
+    throw new ServerConnectorException(
+          "Could not connect to server. Error Stream of Server: "
+           + convertStreamtoString(serverProcess.getErrorStream()));
+
   }
+
+
 
   /**
    * Used to stop the server Process within a shutdown-hook.
@@ -171,7 +187,7 @@ public class ServerConnector {
    * @return The adress where the wsdl-file will be published.
    */
 
-  public String getWsdlLoaction() {
+  public String getWsdlLocation() {
     return publishAddress + "?wsdl";
   }
 
@@ -183,6 +199,7 @@ public class ServerConnector {
      * Uses non shaded (not standalone) server because dependencies for
      * Java-based BDD-Frameworks can be resolved using maven
      */
+    
     return new String[] {
         "java",
         "-cp",
@@ -190,6 +207,7 @@ public class ServerConnector {
         com.github.shell88.bddvideoannotator.service.AnnotationService.class
             .getCanonicalName(), publishAddress, outputDirectory, videoWidth,
         videoHeight };
+        
   }
 
   /**
