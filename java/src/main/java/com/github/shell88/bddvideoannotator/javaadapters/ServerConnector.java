@@ -12,17 +12,15 @@ import java.net.URLClassLoader;
 import java.nio.file.Paths;
 import java.util.Properties;
 import java.util.Scanner;
-import java.util.concurrent.TimeUnit;
 
 import javax.xml.ws.BindingProvider;
-
 
 /**
  * Reads the Properties-File, starts the java-based server Process and
  * establishes a SOAP-connection to it.
  * 
  * @author Hell
- *
+ * 
  */
 
 public class ServerConnector {
@@ -40,7 +38,7 @@ public class ServerConnector {
   private String outputDirectory;
 
   /**
-      Initializes ServerConnector with Properties from properties_file.
+   * Initializes ServerConnector with Properties from properties_file.
    */
   public ServerConnector() {
     Properties properties = loadPropertiesFromConfigFile();
@@ -115,7 +113,7 @@ public class ServerConnector {
     if (javaClient != null) {
       return javaClient;
     }
-    
+
     URL connectionUrl;
     try {
       connectionUrl = new URL(getWsdlLocation());
@@ -123,7 +121,7 @@ public class ServerConnector {
       throw new ServerConnectorException("Problem with WSDL-Location "
           + getWsdlLocation(), e);
     }
-            
+
     for (int retries = 0; retries < 3; retries++) {
       try {
         javaClient = new AnnotationServiceService(connectionUrl)
@@ -142,38 +140,62 @@ public class ServerConnector {
 
       }
     }
-    
+
     throw new ServerConnectorException(
-          "Could not connect to server. Error Stream of Server: "
-           + convertStreamtoString(serverProcess.getErrorStream()));
+        "Could not connect to server. Error Stream of Server: "
+            + convertStreamtoString(serverProcess.getErrorStream()));
 
   }
 
-
-
   /**
    * Used to stop the server Process within a shutdown-hook.
-   * @return boolean to check if the server process is still working
+   * 
+   * @return true if serverProcess was terminated successfully
    */
 
   public synchronized boolean stopServerProcess() {
+
     if (javaClient != null) {
       javaClient.stopScenario();
     }
+
     javaClient = null;
     if (serverProcess == null) {
-      return false;
-    }
-    serverProcess.destroyForcibly();
-
-    try {
-      serverProcess.waitFor(2, TimeUnit.SECONDS);
-    } catch (InterruptedException e) {
-      throw new ServerConnectorException(
-          "Could not safely destroy serverProcess", e);
+      return true;
     }
 
-    return serverProcess.isAlive();
+    serverProcess.destroy();
+
+    return isProcessTerminated(2);
+
+  }
+
+  /**
+   * Compatibility to JRE Version 1.7 Can be replaced with process.isAlive() in
+   * JDK/JRE Version 1.8
+   * 
+   * @param waitSeconds
+   *          timeout
+   * @return true if the process has exited successfully
+   */
+  private boolean isProcessTerminated(int waitSeconds) {
+    int sleepMilliseconds = 10;
+    int repetitions = waitSeconds * 1000 / sleepMilliseconds;
+    do {
+      try {
+        serverProcess.exitValue();
+        return true;
+      } catch (IllegalThreadStateException ex) {
+        try {
+          Thread.sleep(sleepMilliseconds);
+        } catch (InterruptedException e) {
+          return false;
+        } finally {
+          --repetitions;
+        }
+      }
+    } while (repetitions > 0);
+    return false;
   }
 
   /**
@@ -199,7 +221,7 @@ public class ServerConnector {
      * Uses non shaded (not standalone) server because dependencies for
      * Java-based BDD-Frameworks can be resolved using maven
      */
-    
+
     return new String[] {
         "java",
         "-cp",
@@ -207,7 +229,7 @@ public class ServerConnector {
         com.github.shell88.bddvideoannotator.service.AnnotationService.class
             .getCanonicalName(), publishAddress, outputDirectory, videoWidth,
         videoHeight };
-        
+
   }
 
   /**
@@ -235,13 +257,15 @@ public class ServerConnector {
     return buffer.toString();
 
   }
-  
+
   /**
    * Converts an InputStream to a single String.
-   * @param stream the input stream.
-   * @return   the string containing the contents of the stream.
+   * 
+   * @param stream
+   *          the input stream.
+   * @return the string containing the contents of the stream.
    */
-  
+
   public static String convertStreamtoString(InputStream stream) {
     Scanner scanner = new Scanner(stream);
     scanner.useDelimiter("\\A");

@@ -1,6 +1,6 @@
 package stepdefinitions;
 
-import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import com.github.shell88.bddvideoannotator.javaadapters.ServerConnector;
 
@@ -29,9 +29,7 @@ public class ServerStartTest {
 
   @Then("^i must be able to stop the server$")
   public void i_must_be_able_to_stop_the_server() throws Throwable {
-
-    assertFalse("ServerProcess is still running", connector.stopServerProcess());
-
+    assertTrue("ServerProcess was not terminated successfully", connector.stopServerProcess());
   }
 
 }

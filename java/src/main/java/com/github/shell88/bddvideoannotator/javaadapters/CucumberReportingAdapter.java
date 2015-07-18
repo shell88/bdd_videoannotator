@@ -29,10 +29,7 @@ import java.util.List;
  */
 
 public class CucumberReportingAdapter implements Reporter, Formatter {
-  /** Client to the annotationServer. */
   private static AnnotationService client;
-  /** Saved when current Scenario is a ScenarioOutline 
-   * to summarize Scenarios to a single file.*/
   private String lastExampleId = null;
   private boolean scenarioStarted = false;
 
@@ -110,7 +107,6 @@ public class CucumberReportingAdapter implements Reporter, Formatter {
    * Stops the scenario on the server (not scenario outlines).
    */
   public void endOfScenarioLifeCycle(Scenario scenario) {
-   
     // Collect Scenario-Outline to single Scenario
     if (this.lastExampleId != null && this.lastExampleId != scenario.getId()) {
       return;
@@ -210,12 +206,15 @@ public class CucumberReportingAdapter implements Reporter, Formatter {
     return tableToSend;
   }
   
+  /**
+   * @param  str DocString object from a step
+   * @return Converted to a single string with appropriate markups
+   */
   public String convertDocString(DocString str) {
     if (str == null || str.getValue() == null) {
       return "";
     }
     return " \"\"\"" + str.getValue() + "\"\"\"";
-
   }
 
 }
