@@ -81,7 +81,6 @@ public class ServerConnector {
       ProcessBuilder serverProcessBuilder = new ProcessBuilder(
           getCommandForServerStart());
       try {
-       // serverProcessBuilder.redirectErrorStream(true);
         serverProcess = serverProcessBuilder.start();
       } catch (IOException e1) {
         throw new ServerConnectorException("Could not start ServerProcess", e1);
@@ -120,7 +119,16 @@ public class ServerConnector {
 
     int sleepMilliseconds = 100;
     
-    for (int retries = 0; retries < 10; retries++) {
+    for (int retries = 0; retries < 30; retries++) {
+      
+      try {
+        if (serverProcess.getErrorStream().available() > 0) {
+          break;
+        }
+      } catch (IOException e2) {
+          //nothing to do here
+      }
+
       try {
         serverClient = new AnnotationServiceService(connectionUrl)
             .getAnnotationServicePort();
