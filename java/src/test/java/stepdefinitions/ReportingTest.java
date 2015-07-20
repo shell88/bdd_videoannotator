@@ -47,7 +47,7 @@ public class ReportingTest {
     mockedClient = mock(AnnotationService.class);
     ServerConnector mockedServerConnector = mock(ServerConnector.class);
     when(mockedServerConnector.startServerProcess()).thenReturn(mockedClient);
-    when(mockedServerConnector.getJavaClient()).thenReturn(mockedClient);
+    when(mockedServerConnector.getServerClient()).thenReturn(mockedClient);
     mockedAdapter = new CucumberReportingAdapter(mockedServerConnector);
    
   }

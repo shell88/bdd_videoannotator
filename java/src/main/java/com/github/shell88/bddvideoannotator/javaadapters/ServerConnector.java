@@ -3,17 +3,18 @@ package com.github.shell88.bddvideoannotator.javaadapters;
 import com.github.shell88.bddvideoannotator.stubjava.AnnotationService;
 import com.github.shell88.bddvideoannotator.stubjava.AnnotationServiceService;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Paths;
 import java.util.Properties;
-import java.util.Scanner;
-
 import javax.xml.ws.BindingProvider;
+
 
 /**
  * Reads the Properties-File, starts the java-based server Process and
@@ -24,17 +25,11 @@ import javax.xml.ws.BindingProvider;
  */
 
 public class ServerConnector {
-  /** Client to the annotationServer. */
-  private AnnotationService javaClient = null;
-  /** Process of the started annotationServer. */
+  private AnnotationService serverClient = null;
   private Process serverProcess = null;
-  /** Address where annotationServer is published. */
   private String publishAddress;
-  /** Configuration of the VideoWith from PropertiesFile. */
   private String videoWidth;
-  /** Configuration of the VideoHeight from PropertiesFile. */
   private String videoHeight;
-  /** Configuration of the OutputDirectory from PropertiesFile. */
   private String outputDirectory;
 
   /**
@@ -86,6 +81,7 @@ public class ServerConnector {
       ProcessBuilder serverProcessBuilder = new ProcessBuilder(
           getCommandForServerStart());
       try {
+       // serverProcessBuilder.redirectErrorStream(true);
         serverProcess = serverProcessBuilder.start();
       } catch (IOException e1) {
         throw new ServerConnectorException("Could not start ServerProcess", e1);
@@ -102,16 +98,16 @@ public class ServerConnector {
       });
 
     }
-    return getJavaClient();
+    return getServerClient();
 
   }
 
   /**
    * @return - Singleton SOAP-Client to the annotation server.
    */
-  public synchronized AnnotationService getJavaClient() {
-    if (javaClient != null) {
-      return javaClient;
+  public synchronized AnnotationService getServerClient() {
+    if (serverClient != null) {
+      return serverClient;
     }
 
     URL connectionUrl;
@@ -122,25 +118,25 @@ public class ServerConnector {
           + getWsdlLocation(), e);
     }
 
-    for (int retries = 0; retries < 3; retries++) {
+    int sleepMilliseconds = 100;
+    
+    for (int retries = 0; retries < 10; retries++) {
       try {
-        javaClient = new AnnotationServiceService(connectionUrl)
+        serverClient = new AnnotationServiceService(connectionUrl)
             .getAnnotationServicePort();
-        BindingProvider bindingProvider = (BindingProvider) javaClient;
+        BindingProvider bindingProvider = (BindingProvider) serverClient;
         bindingProvider.getRequestContext().put(
             BindingProvider.ENDPOINT_ADDRESS_PROPERTY, getPublishingAddress());
-        return javaClient;
+        return serverClient;
       } catch (javax.xml.ws.WebServiceException e) {
-        System.out.println("Trying to connect again, waiting 100 ms");
+        System.out.println("Trying to connect again, waiting " + sleepMilliseconds + " ms");
         try {
-          Thread.sleep(100);
+          Thread.sleep(sleepMilliseconds);
         } catch (InterruptedException e1) {
           e1.printStackTrace();
         }
-
-      }
-    }
-
+      }   
+    } 
     throw new ServerConnectorException(
         "Could not connect to server. Error Stream of Server: "
             + convertStreamtoString(serverProcess.getErrorStream()));
@@ -155,11 +151,11 @@ public class ServerConnector {
 
   public synchronized boolean stopServerProcess() {
 
-    if (javaClient != null) {
-      javaClient.stopScenario();
+    if (serverClient != null) {
+      serverClient.stopScenario();
     }
 
-    javaClient = null;
+    serverClient = null;
     if (serverProcess == null) {
       return true;
     }
@@ -267,11 +263,18 @@ public class ServerConnector {
    */
 
   public static String convertStreamtoString(InputStream stream) {
-    Scanner scanner = new Scanner(stream);
-    scanner.useDelimiter("\\A");
-    String content = scanner.hasNext() ? scanner.next() : "";
-    scanner.close();
-    return content;
+    StringBuilder content = new StringBuilder();
+    String tempRead;
+    BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+    try {
+      while (reader.ready() && (tempRead = reader.readLine()) != null) {
+        content.append(tempRead);
+      }
+      reader.close();
+      return content.toString();
+    } catch (IOException e) {
+      return "";
+    }
   }
 
 }
