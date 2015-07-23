@@ -159,7 +159,11 @@ public class ServerConnector {
   public synchronized boolean stopServerProcess() {
 
     if (serverClient != null) {
-      serverClient.stopScenario();
+      try {
+        serverClient.stopScenario();
+      } catch (javax.xml.ws.WebServiceException e) {
+        System.err.println("Could not stopScenario: " + e.getMessage());
+      }
     }
 
     serverClient = null;
