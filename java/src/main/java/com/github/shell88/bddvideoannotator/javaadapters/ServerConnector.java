@@ -137,7 +137,6 @@ public class ServerConnector {
             BindingProvider.ENDPOINT_ADDRESS_PROPERTY, getPublishingAddress());
         return serverClient;
       } catch (javax.xml.ws.WebServiceException e) {
-        System.out.println("Trying to connect again, waiting " + sleepMilliseconds + " ms");
         try {
           Thread.sleep(sleepMilliseconds);
         } catch (InterruptedException e1) {
