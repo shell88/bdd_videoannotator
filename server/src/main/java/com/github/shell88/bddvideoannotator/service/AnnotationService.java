@@ -100,7 +100,7 @@ public class AnnotationService {
    */
 
   @WebMethod(operationName = "startScenario")
-  public synchronized void startScenario(
+  public void startScenario(
                         @WebParam(name = "scenarioName")
                          String scenarioName) {
 
@@ -118,7 +118,7 @@ public class AnnotationService {
    */
 
 
-  public synchronized void stopScenario() {
+  public void stopScenario() {
     this.stopVideoRecording();
 
     for (int i = resultPos; stepAnnotations != null
@@ -133,7 +133,7 @@ public class AnnotationService {
    * Writes the buffered Annotations to the annotation output file and stops
    * video recording.
    */
-  private synchronized void writeAnnotationFile() {
+  private void writeAnnotationFile() {
     if (stepAnnotations == null) {
       return;
     }
@@ -182,7 +182,7 @@ public class AnnotationService {
    */
 
   @WebMethod(operationName = "changeOutputDirectory")
-  public synchronized void changeOutputDirectory(
+  public void changeOutputDirectory(
       @WebParam(name = "path")  String path) {
   
     File changedOutputDirectory = new File(path);
@@ -205,7 +205,7 @@ public class AnnotationService {
   /**
    * Starts a screencast.
    */
-  private synchronized void startVideoRecording() {
+  private void startVideoRecording() {
 
     if (videoRecorder != null) {
       return;
@@ -232,7 +232,7 @@ public class AnnotationService {
   /**
    * Stops a screencast.
    */
-  private synchronized void stopVideoRecording() {
+  private void stopVideoRecording() {
     if (videoRecorder == null) { 
       return; 
     }
@@ -256,7 +256,7 @@ public class AnnotationService {
    */
 
   @WebMethod(operationName = "addStepToBuffer")
-  public synchronized void addStepToBuffer(
+  public void addStepToBuffer(
       @WebParam(name = "steptext")  String steptext,
       @WebParam(name = "datatable")  String[][] datatable) {
     if (stepAnnotations == null) {
@@ -291,7 +291,7 @@ public class AnnotationService {
    *          the result of the step
    */
   @WebMethod(operationName = "addResultToBufferStep")
-  public synchronized void addResultToBufferStep(
+  public void addResultToBufferStep(
       @WebParam(name = "result")  StepResult result) {
 
     if (stepAnnotations == null || stepAnnotations.get(resultPos) == null) {
@@ -325,7 +325,7 @@ public class AnnotationService {
    */
 
   @WebMethod(operationName = "addStepWithResult")
-  public synchronized void addStepWithResult(
+  public void addStepWithResult(
       @WebParam(name = "steptext")  String steptext,
       @WebParam(name = "datatable")  String[][] datatable,
       @WebParam(name = "result")  StepResult result) {

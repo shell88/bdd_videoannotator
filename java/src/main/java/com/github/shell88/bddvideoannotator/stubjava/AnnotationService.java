@@ -25,6 +25,36 @@ public interface AnnotationService {
 
     /**
      * 
+     * @param scenarioName
+     */
+    @WebMethod
+    @Action(input = "http://service.bddvideoannotator.shell88.github.com/AnnotationService/startScenarioRequest", output = "http://service.bddvideoannotator.shell88.github.com/AnnotationService/startScenarioResponse")
+    public void startScenario(
+        @WebParam(name = "scenarioName", partName = "scenarioName")
+        String scenarioName);
+
+    /**
+     * 
+     */
+    @WebMethod
+    @Action(input = "http://service.bddvideoannotator.shell88.github.com/AnnotationService/stopScenarioRequest", output = "http://service.bddvideoannotator.shell88.github.com/AnnotationService/stopScenarioResponse")
+    public void stopScenario();
+
+    /**
+     * 
+     * @param datatable
+     * @param steptext
+     */
+    @WebMethod
+    @Action(input = "http://service.bddvideoannotator.shell88.github.com/AnnotationService/addStepToBufferRequest", output = "http://service.bddvideoannotator.shell88.github.com/AnnotationService/addStepToBufferResponse")
+    public void addStepToBuffer(
+        @WebParam(name = "steptext", partName = "steptext")
+        String steptext,
+        @WebParam(name = "datatable", partName = "datatable")
+        StringArrayArray datatable);
+
+    /**
+     * 
      * @param path
      */
     @WebMethod
@@ -58,35 +88,5 @@ public interface AnnotationService {
         StringArrayArray datatable,
         @WebParam(name = "result", partName = "result")
         StepResult result);
-
-    /**
-     * 
-     * @param scenarioName
-     */
-    @WebMethod
-    @Action(input = "http://service.bddvideoannotator.shell88.github.com/AnnotationService/startScenarioRequest", output = "http://service.bddvideoannotator.shell88.github.com/AnnotationService/startScenarioResponse")
-    public void startScenario(
-        @WebParam(name = "scenarioName", partName = "scenarioName")
-        String scenarioName);
-
-    /**
-     * 
-     */
-    @WebMethod
-    @Action(input = "http://service.bddvideoannotator.shell88.github.com/AnnotationService/stopScenarioRequest", output = "http://service.bddvideoannotator.shell88.github.com/AnnotationService/stopScenarioResponse")
-    public void stopScenario();
-
-    /**
-     * 
-     * @param datatable
-     * @param steptext
-     */
-    @WebMethod
-    @Action(input = "http://service.bddvideoannotator.shell88.github.com/AnnotationService/addStepToBufferRequest", output = "http://service.bddvideoannotator.shell88.github.com/AnnotationService/addStepToBufferResponse")
-    public void addStepToBuffer(
-        @WebParam(name = "steptext", partName = "steptext")
-        String steptext,
-        @WebParam(name = "datatable", partName = "datatable")
-        StringArrayArray datatable);
 
 }
