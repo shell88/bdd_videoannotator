@@ -4,7 +4,7 @@ with Behat (PHP). It searches for the project on github using Google. The test w
 
 # Prerequisites
 - Composer 1.0-dev (other versions may also work)
-- Java JRE 1.8* (other versions may also work)
+- Java JRE 1.7* (other versions may also work) / OpenJDK-7 (Linux)
   * set also Java to PATH (check with `java -version`)
 - PHP CLI 5.6.7 (tested version, others may also work)  
   PHP-Extensions that have to be enabled:
@@ -24,7 +24,11 @@ java -jar vendor/netwing/selenium-server-standalone/selenium-server-standalone-<
 ```
 -Execute the tests
 ```sh
+Windows
 bin\behat -f bdd_videoannotator\bddadapters\BehatReportingAdapter,pretty
+
+Linux
+bin/behat -f bdd_videoannotator\\bddadapters\\BehatReportingAdapter,pretty
 ```
 You can also configure the plugin from the config file in `vendor/shell88/bdd_videoannotator/bdd_videoannotator/bddadapters/adapter_config.ini`.
 
