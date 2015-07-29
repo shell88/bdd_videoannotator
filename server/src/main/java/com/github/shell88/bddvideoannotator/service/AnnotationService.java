@@ -138,19 +138,8 @@ public class AnnotationService {
       return;
     }
     
-    String prefix = "annotations";
-    if (this.currentScenarioName != "") {
-      // Trim to valid fileName
-      prefix = this.currentScenarioName;
-      prefix = prefix.replaceAll("[^a-zA-Z0-9.-]", "_");
-      prefix = prefix.replaceAll("\\s", "_");
-    }
-
-    File outputFile = Helper.createNewOutputFile(outputDirectory,
-        prefix, "eaf");
-
     try {
-      AnnotationExporter exporter = new EafAnnotationExport(outputFile,
+      AnnotationExporter exporter = new EafAnnotationExport(this.outputDirectory,
           new String[] { "Steps" });
       for (int i = 0; 
           stepAnnotations != null && i < stepAnnotations.size(); i++) {
@@ -163,7 +152,7 @@ public class AnnotationService {
       } else {
         exporter.setVideoReferenceFile(" ", " ");
       }
-      exporter.writeOutputFile();
+      exporter.endOfCurrentScenario(this.currentScenarioName);
       
     } catch ( Exception e ) {
       throw new WebServiceException( "Could not write Annotation-Outputfile: " + e.getMessage());

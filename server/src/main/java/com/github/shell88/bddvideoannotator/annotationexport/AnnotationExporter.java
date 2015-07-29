@@ -1,7 +1,5 @@
 package com.github.shell88.bddvideoannotator.annotationexport;
 
-import com.github.shell88.bddvideoannotator.service.Helper;
-
 import java.io.File;
 
 /**
@@ -12,23 +10,23 @@ import java.io.File;
  */
 public abstract class AnnotationExporter {
   /** File where EAF outputFile will be stored. */
-  private File outputFile;
+  private File outputDirectory;
   /** Contains identifiers for all exported tiers in the output file. */
   private final String[] tiers = new String[] { "Steps" };
 
   /**
    * Initializes a new AnnotationFileExporter.
-   * @param output {@link #outputFile}
+   * @param outputDirectory {@link #outputDirectory}
    */
-  public AnnotationExporter(final File output) {
-    this.outputFile = output;
+  public AnnotationExporter(final File outputDirectory) {
+    this.outputDirectory = outputDirectory;
   }
 
   /** 
-   * @return {@link #outputFile}.
+   * @return {@link #outputDirectory}.
    */
-  protected final File getOutputFile() {
-    return this.outputFile;
+  protected final File getOutputDirectory() {
+    return this.outputDirectory;
   }
 
   /**
@@ -39,20 +37,13 @@ public abstract class AnnotationExporter {
   }
 
   /**
-   * Uses {@link #addAnnotation(String, Long, Long, String)} to adds the step to
+   * Uses {@link #addTextualAnnotation(String, Long, Long, String)} to adds the step to
    * the designated annotation tiers.
    * 
    * @param step
    *          the StepAnnotatin to be added
    */
-  public void addStepAnnotation(StepAnnotation step) {
-    String annotationText = step.getSteptext()
-        + Helper.stringifyDatatable(step.getDataTables()) + " "
-        + step.getStepResult().toString();
-    addAnnotation("Steps", step.getMillisecondsFrom(),
-        step.getMillisecondsTo(), annotationText);
-  }
-
+  public abstract void addStepAnnotation(StepAnnotation step);
   /**
    * Adds the reference to the corresponding video file to the
    * annotation-Document.
@@ -65,26 +56,12 @@ public abstract class AnnotationExporter {
   public abstract void setVideoReferenceFile(String pathToVideoFile,
       String checksum);
 
-  /**
-   * Adds a textual annotation to the document.
-   * 
-   * @param tierIdentifier
-   *          identifies the tier that the annotation should be added
-   * @param millisFrom
-   *          Starting time alignment of the annotation
-   * @param millisTo
-   *          Ending time alignment of the annotation
-   * @param text
-   *          text to be added as annotation.
-   */
-  protected abstract void addAnnotation(String tierIdentifier,
-       Long millisFrom,  Long millisTo, String text);
 
   /**
-   * Writes the AnnotationDocument to {@link #outputFile}.
+   * Writes the AnnotationDocument to {@link #outputDirectory}.
    * 
    * @throws Exception
    *           - thrown when writing the file is not possible
    */
-  public abstract void writeOutputFile() throws Exception;
+  public abstract void endOfCurrentScenario(String currentScenarioName) throws Exception;
 }

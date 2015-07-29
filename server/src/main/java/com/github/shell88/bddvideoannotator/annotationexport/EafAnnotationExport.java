@@ -10,6 +10,7 @@ import com.github.shell88.bddvideoannotator.eaf.LingType;
 import com.github.shell88.bddvideoannotator.eaf.TierType;
 import com.github.shell88.bddvideoannotator.eaf.TimeType;
 import com.github.shell88.bddvideoannotator.eaf.TimeType.TIMESLOT;
+import com.github.shell88.bddvideoannotator.service.Helper;
 
 import java.io.File;
 import java.util.GregorianCalendar;
@@ -42,9 +43,9 @@ public class EafAnnotationExport extends AnnotationExporter {
    * @throws DatatypeConfigurationException
    *               thrown if initialization of EAF-File fails
    */
-  public EafAnnotationExport(File output, String[] tiers)
+  public EafAnnotationExport(File outputDirectory, String[] tiers)
       throws DatatypeConfigurationException {
-    super(output);
+    super(outputDirectory);
     this.initializeEafFile(tiers);
   }
   
@@ -168,14 +169,27 @@ public class EafAnnotationExport extends AnnotationExporter {
   }
 
   @Override
-  public  void setVideoReferenceFile(String pathToVideofile,
+  public void setVideoReferenceFile(String pathToVideofile,
       String checksum) {
     doc.getHEADER().getMEDIADESCRIPTOR().get(0).setMEDIAURL(pathToVideofile);
     doc.getHEADER().getMEDIADESCRIPTOR().get(0).setMIMETYPE(checksum);
   }
 
   @Override
-  protected  void addAnnotation( String tierIdentifier, 
+  public void addStepAnnotation(StepAnnotation step) {
+    // TODO Auto-generated method stub
+
+    String annotationText = step.getSteptext()
+        + Helper.stringifyDatatable(step.getDataTables()) + " "
+        + step.getStepResult().toString();
+
+    addTextualAnnotation("Steps", step.getMillisecondsFrom(),
+        step.getMillisecondsTo(), annotationText);
+
+  }
+  
+
+  protected void addTextualAnnotation( String tierIdentifier, 
        Long millisFrom,  Long millisTo,  String text) {
     TierType ttype = this.getTierbyId(tierIdentifier);
     String idAnnotation = this.getNewAnnotationId(ttype);
@@ -196,12 +210,29 @@ public class EafAnnotationExport extends AnnotationExporter {
   }
   
   @Override
-  public  void writeOutputFile() throws Exception {
+  public void endOfCurrentScenario(String currentScenarioName) throws Exception {
+
+    
+    String prefix = "annotations";
+    
+    if (currentScenarioName != "") {
+      // Trim to valid fileName
+      prefix = currentScenarioName;
+      prefix = prefix.replaceAll("[^a-zA-Z0-9.-]", "_");
+      prefix = prefix.replaceAll("\\s", "_");
+    }
+
+    File outputFile = Helper.createNewOutputFile(this.getOutputDirectory(),
+        prefix, "eaf");
+    
     /*
      * Validation against xml-schema could be performed by the display software
      * As the annotation file will be used as a test protocol, it should not be
      * abborted due to incompatibility with the xml-schema
      */
-    JAXB.marshal(doc, getOutputFile());
+    
+    JAXB.marshal(doc, outputFile);
   }
+
+
 }
