@@ -21,14 +21,15 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
-
 /**
  * Exports Annotations to the EAF-Format.
+ * 
  * @author Hell
  */
 
 public class EafAnnotationExporter extends AnnotationExporter {
-  /**  Head-element for the EAF-XML. 
+  /**
+   * Head-element for the EAF-XML.
    */
   private ANNOTATIONDOCUMENT doc;
   /**
@@ -36,24 +37,28 @@ public class EafAnnotationExporter extends AnnotationExporter {
    */
   private TimeType timeType;
 
+  private String[] tierIdentifier = new String[] { "Steps" };
+
   /**
-   * @param output Target-File for the eaf-annotations.
-   * @param tiers  Array of Strings that identifies the tiers, for which
-   *               annotations will be added to the file.
+   * @param output
+   *          Target-File for the eaf-annotations.
+   * @param tiers
+   *          Array of Strings that identifies the tiers, for which annotations
+   *          will be added to the file.
    * @throws DatatypeConfigurationException
-   *               thrown if initialization of EAF-File fails
+   *           thrown if initialization of EAF-File fails
    */
-  public EafAnnotationExporter(File outputDirectory, String[] tiers)
-      throws DatatypeConfigurationException {
-    super(outputDirectory);
-    this.initializeEafFile(tiers);
+  public EafAnnotationExporter() throws DatatypeConfigurationException {
+    this.initializeEafFile(tierIdentifier);
   }
-  
+
   /**
    * Initializes the EAF-output document.
-   * @param tiers Tiers for the output document
-   * @throws DatatypeConfigurationException 
-   * Problems while adding calendar information 
+   * 
+   * @param tiers
+   *          Tiers for the output document
+   * @throws DatatypeConfigurationException
+   *           Problems while adding calendar information
    */
   private void initializeEafFile(String[] tiers)
       throws DatatypeConfigurationException {
@@ -84,8 +89,8 @@ public class EafAnnotationExporter extends AnnotationExporter {
 
     // Predefined Constraints, that must be contained in an EAF-File
     ConstraintType ctype = new ConstraintType();
-    ctype.setDESCRIPTION("Time subdivision of parent " 
-                       + "annotation's time interval");
+    ctype.setDESCRIPTION("Time subdivision of parent "
+        + "annotation's time interval");
     ctype.setSTEREOTYPE("Time_Subdivision");
     doc.getCONSTRAINT().add(ctype);
 
@@ -101,8 +106,8 @@ public class EafAnnotationExporter extends AnnotationExporter {
 
     ctype = new ConstraintType();
     ctype.setDESCRIPTION("Time alignable annotations within the parent "
-                        + "annotation's time interval");
-    
+        + "annotation's time interval");
+
     ctype.setSTEREOTYPE("Included_In");
     doc.getCONSTRAINT().add(ctype);
 
@@ -123,10 +128,11 @@ public class EafAnnotationExporter extends AnnotationExporter {
   }
 
   /**
-   * @param id   String identifier for the tier.
-   * @return     TierType in the XML-Tree
+   * @param id
+   *          String identifier for the tier.
+   * @return TierType in the XML-Tree
    */
-  
+
   private TierType getTierbyId(String id) {
     TierType ttype = null;
     Iterator<TierType> ttypeIt = this.doc.getTIER().iterator();
@@ -146,7 +152,9 @@ public class EafAnnotationExporter extends AnnotationExporter {
 
   /**
    * Inserts a new TIMESLOT-Element in the xml tree.
-   * @param value     - The time value for the timeslot (milliseconds)
+   * 
+   * @param value
+   *          - The time value for the timeslot (milliseconds)
    * @return TIMESLOT - The generated timeslot that can be used for referencing
    */
   private TIMESLOT addNewTimeSlot(Long value) {
@@ -159,9 +167,10 @@ public class EafAnnotationExporter extends AnnotationExporter {
   }
 
   /**
-   * @param  ttype         The tier-element in the XML-tree.
-   * @return idAnnotation  An unused identifier for that tier that
-   *                       can be used to add a new annotation
+   * @param ttype
+   *          The tier-element in the XML-tree.
+   * @return idAnnotation An unused identifier for that tier that can be used to
+   *         add a new annotation
    */
   private synchronized String getNewAnnotationId(TierType ttype) {
     String idAnnotation = "a" + ttype.getANNOTATION().size() + 1;
@@ -169,8 +178,7 @@ public class EafAnnotationExporter extends AnnotationExporter {
   }
 
   @Override
-  public void setVideoReferenceFile(String pathToVideofile,
-      String checksum) {
+  public void setVideoReferenceFile(String pathToVideofile, String checksum) {
     doc.getHEADER().getMEDIADESCRIPTOR().get(0).setMEDIAURL(pathToVideofile);
     doc.getHEADER().getMEDIADESCRIPTOR().get(0).setMIMETYPE(checksum);
   }
@@ -183,14 +191,13 @@ public class EafAnnotationExporter extends AnnotationExporter {
         + Helper.stringifyDatatable(step.getDataTables()) + " "
         + step.getStepResult().toString();
 
-    addTextualAnnotation("Steps", step.getMillisecondsFrom(),
+    addTextualAnnotation(this.tierIdentifier[0], step.getMillisecondsFrom(),
         step.getMillisecondsTo(), annotationText);
 
   }
-  
 
-  protected void addTextualAnnotation( String tierIdentifier, 
-       Long millisFrom,  Long millisTo,  String text) {
+  protected void addTextualAnnotation(String tierIdentifier, Long millisFrom,
+      Long millisTo, String text) {
     TierType ttype = this.getTierbyId(tierIdentifier);
     String idAnnotation = this.getNewAnnotationId(ttype);
 
@@ -208,13 +215,12 @@ public class EafAnnotationExporter extends AnnotationExporter {
 
     ttype.getANNOTATION().add(ann);
   }
-  
+
   @Override
   public void endOfCurrentScenario(String currentScenarioName) throws Exception {
 
-    
     String prefix = "annotations";
-    
+
     if (currentScenarioName != "") {
       // Trim to valid fileName
       prefix = currentScenarioName;
@@ -224,15 +230,14 @@ public class EafAnnotationExporter extends AnnotationExporter {
 
     File outputFile = Helper.createNewOutputFile(this.getOutputDirectory(),
         prefix, "eaf");
-    
+
     /*
      * Validation against xml-schema could be performed by the display software
      * As the annotation file will be used as a test protocol, it should not be
      * abborted due to incompatibility with the xml-schema
      */
-    
+
     JAXB.marshal(doc, outputFile);
   }
-
 
 }

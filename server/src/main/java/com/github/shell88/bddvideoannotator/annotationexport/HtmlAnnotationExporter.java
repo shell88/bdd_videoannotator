@@ -6,14 +6,6 @@ import java.io.IOException;
 public class HtmlAnnotationExporter extends AnnotationExporter {
 
 
-  public HtmlAnnotationExporter(File output, String[] tiers) throws IOException {
-    super(output);
-    
-    System.out.println(output.isDirectory());
-    
-
-  }
-
 
   @Override
   public void setVideoReferenceFile(String pathToVideoFile, String checksum) {

@@ -11,16 +11,7 @@ import java.io.File;
 public abstract class AnnotationExporter {
   /** File where EAF outputFile will be stored. */
   private File outputDirectory;
-  /** Contains identifiers for all exported tiers in the output file. */
-  private final String[] tiers = new String[] { "Steps" };
-
-  /**
-   * Initializes a new AnnotationFileExporter.
-   * @param outputDirectory {@link #outputDirectory}
-   */
-  public AnnotationExporter(final File outputDirectory) {
-    setOutputDirectory(outputDirectory);
-  }
+ 
 
   /** 
    * @return {@link #outputDirectory}.
@@ -34,12 +25,6 @@ public abstract class AnnotationExporter {
     this.outputDirectory = outputDirectory;
   }
   
-  /**
-   * @return {@link #tiers}.
-   */
-  protected final String[] getTiers() {
-    return this.tiers;
-  }
 
   /**
    * Uses {@link #addTextualAnnotation(String, Long, Long, String)} to adds the step to

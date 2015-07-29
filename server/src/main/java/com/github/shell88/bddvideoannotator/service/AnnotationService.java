@@ -1,7 +1,6 @@
 package com.github.shell88.bddvideoannotator.service;
 
 import com.github.shell88.bddvideoannotator.annotationexport.AnnotationExporter;
-import com.github.shell88.bddvideoannotator.annotationexport.EafAnnotationExporter;
 import com.github.shell88.bddvideoannotator.annotationexport.ExporterFactory;
 import com.github.shell88.bddvideoannotator.annotationexport.StepAnnotation;
 import com.github.shell88.bddvideoannotator.annotationexport.StepResult;
@@ -91,14 +90,13 @@ public class AnnotationService {
     }
     
     changeOutputDirectory(path);
-    //TODO: usage of changeOutputDirectory? => remove if not necessary
 
   }
   
   private AnnotationExporter getAnnotationExporter() {
     if (this.annotationExporter == null) {
-      this.annotationExporter = ExporterFactory.createAnnotationExporter(
-          SupportedAnnotationFileExtension.EAF, this.outputDirectory, new String[] { "Steps" });
+      this.annotationExporter = ExporterFactory
+          .createAnnotationExporter(SupportedAnnotationFileExtension.EAF);
     }
     return this.annotationExporter;
   }
