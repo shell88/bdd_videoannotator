@@ -1,9 +1,11 @@
 package com.github.shell88.bddvideoannotator.service;
 
 import com.github.shell88.bddvideoannotator.annotationexport.AnnotationExporter;
-import com.github.shell88.bddvideoannotator.annotationexport.EafAnnotationExport;
+import com.github.shell88.bddvideoannotator.annotationexport.EafAnnotationExporter;
+import com.github.shell88.bddvideoannotator.annotationexport.ExporterFactory;
 import com.github.shell88.bddvideoannotator.annotationexport.StepAnnotation;
 import com.github.shell88.bddvideoannotator.annotationexport.StepResult;
+import com.github.shell88.bddvideoannotator.annotationexport.SupportedAnnotationFileExtension;
 import com.github.shell88.bddvideoannotator.videorecorder.MonteVideoRecorderAdapter;
 import com.github.shell88.bddvideoannotator.videorecorder.VideoRecorder;
 
@@ -28,6 +30,7 @@ import javax.xml.ws.WebServiceException;
 @SOAPBinding(style = SOAPBinding.Style.RPC)
 public class AnnotationService {
   
+  
   /**List of buffered step_annotations. */
   private ArrayList<StepAnnotation> stepAnnotations;
   /** The systemTimestamp when the scenario was started using
@@ -51,6 +54,8 @@ public class AnnotationService {
   private int videoWidth;
   /** Directory where to store the video and annotation outputFile.*/
   private File outputDirectory;
+  /** Singleton Annotation Exporter. */
+  private AnnotationExporter annotationExporter;
 
   /**
    * Necessary for generating java client. DO NOT USE.
@@ -84,10 +89,20 @@ public class AnnotationService {
         throw new IllegalArgumentException("Video height has illegal dimension: " + videoHeight);  
       }
     }
-
+    
     changeOutputDirectory(path);
+    //TODO: usage of changeOutputDirectory? => remove if not necessary
 
   }
+  
+  private AnnotationExporter getAnnotationExporter() {
+    if (this.annotationExporter == null) {
+      this.annotationExporter = ExporterFactory.createAnnotationExporter(
+          SupportedAnnotationFileExtension.EAF, this.outputDirectory, new String[] { "Steps" });
+    }
+    return this.annotationExporter;
+  }
+  
 
   /**
    * Starts a new annotation file/video file. For each Scenario an own
@@ -138,21 +153,21 @@ public class AnnotationService {
       return;
     }
     
+    //TODO: Collect also FeatureName => new SOAP-Method
+
     try {
-      AnnotationExporter exporter = new EafAnnotationExport(this.outputDirectory,
-          new String[] { "Steps" });
-      for (int i = 0; 
-          stepAnnotations != null && i < stepAnnotations.size(); i++) {
-        exporter.addStepAnnotation(stepAnnotations.get(i));
+
+      for (int i = 0; stepAnnotations != null && i < stepAnnotations.size(); i++) {
+        getAnnotationExporter().addStepAnnotation(stepAnnotations.get(i));
       }
       
       if (videoOutputFile != "") {
         String checksum = Helper.calcSha1Checksum(videoOutputFile);
-        exporter.setVideoReferenceFile(videoOutputFile, checksum);
+        getAnnotationExporter().setVideoReferenceFile(videoOutputFile, checksum);
       } else {
-        exporter.setVideoReferenceFile(" ", " ");
+        getAnnotationExporter().setVideoReferenceFile(" ", " ");
       }
-      exporter.endOfCurrentScenario(this.currentScenarioName);
+      getAnnotationExporter().endOfCurrentScenario(this.currentScenarioName);
       
     } catch ( Exception e ) {
       throw new WebServiceException( "Could not write Annotation-Outputfile: " + e.getMessage());
@@ -186,9 +201,9 @@ public class AnnotationService {
             + changedOutputDirectory.toString());
       }
     }
-
+    
     this.outputDirectory = changedOutputDirectory;
-
+    this.getAnnotationExporter().setOutputDirectory(outputDirectory);
   }
 
   /**

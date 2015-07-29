@@ -27,7 +27,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * @author Hell
  */
 
-public class EafAnnotationExport extends AnnotationExporter {
+public class EafAnnotationExporter extends AnnotationExporter {
   /**  Head-element for the EAF-XML. 
    */
   private ANNOTATIONDOCUMENT doc;
@@ -43,7 +43,7 @@ public class EafAnnotationExport extends AnnotationExporter {
    * @throws DatatypeConfigurationException
    *               thrown if initialization of EAF-File fails
    */
-  public EafAnnotationExport(File outputDirectory, String[] tiers)
+  public EafAnnotationExporter(File outputDirectory, String[] tiers)
       throws DatatypeConfigurationException {
     super(outputDirectory);
     this.initializeEafFile(tiers);

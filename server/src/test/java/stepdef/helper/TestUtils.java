@@ -5,6 +5,8 @@ import static org.junit.Assert.assertTrue;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.comparator.LastModifiedFileComparator;
 
+import com.github.shell88.bddvideoannotator.annotationexport.SupportedAnnotationFileExtension;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;

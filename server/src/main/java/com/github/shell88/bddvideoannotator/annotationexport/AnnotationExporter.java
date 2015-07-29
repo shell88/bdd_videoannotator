@@ -19,7 +19,7 @@ public abstract class AnnotationExporter {
    * @param outputDirectory {@link #outputDirectory}
    */
   public AnnotationExporter(final File outputDirectory) {
-    this.outputDirectory = outputDirectory;
+    setOutputDirectory(outputDirectory);
   }
 
   /** 
@@ -29,6 +29,11 @@ public abstract class AnnotationExporter {
     return this.outputDirectory;
   }
 
+  
+  public final void setOutputDirectory(File outputDirectory) {
+    this.outputDirectory = outputDirectory;
+  }
+  
   /**
    * @return {@link #tiers}.
    */

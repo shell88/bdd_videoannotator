@@ -1,6 +1,6 @@
 package stepdef.helper.annotationfileparser;
 
-import stepdef.helper.SupportedAnnotationFileExtension;
+import com.github.shell88.bddvideoannotator.annotationexport.SupportedAnnotationFileExtension;
 
 import java.io.File;
 

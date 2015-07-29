@@ -3,10 +3,10 @@ package com.github.shell88.bddvideoannotator.annotationexport;
 import java.io.File;
 import java.io.IOException;
 
-public class HtmlAnnotationExport extends AnnotationExporter {
+public class HtmlAnnotationExporter extends AnnotationExporter {
 
 
-  public HtmlAnnotationExport(File output, String[] tiers) throws IOException {
+  public HtmlAnnotationExporter(File output, String[] tiers) throws IOException {
     super(output);
     
     System.out.println(output.isDirectory());
