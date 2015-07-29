@@ -177,16 +177,9 @@ public class EafAnnotationExporter extends AnnotationExporter {
     return idAnnotation;
   }
 
-  @Override
-  public void setVideoReferenceFile(String pathToVideofile, String checksum) {
-    doc.getHEADER().getMEDIADESCRIPTOR().get(0).setMEDIAURL(pathToVideofile);
-    doc.getHEADER().getMEDIADESCRIPTOR().get(0).setMIMETYPE(checksum);
-  }
 
   @Override
   public void addStepAnnotation(StepAnnotation step) {
-    // TODO Auto-generated method stub
-
     String annotationText = step.getSteptext()
         + Helper.stringifyDatatable(step.getDataTables()) + " "
         + step.getStepResult().toString();
@@ -217,7 +210,7 @@ public class EafAnnotationExporter extends AnnotationExporter {
   }
 
   @Override
-  public void endOfCurrentScenario(String currentScenarioName) throws Exception {
+  public void endOfCurrentScenario(String currentScenarioName, String pathToVideofile, String checksum) throws Exception {
 
     String prefix = "annotations";
 
@@ -228,6 +221,9 @@ public class EafAnnotationExporter extends AnnotationExporter {
       prefix = prefix.replaceAll("\\s", "_");
     }
 
+    doc.getHEADER().getMEDIADESCRIPTOR().get(0).setMEDIAURL(pathToVideofile);
+    doc.getHEADER().getMEDIADESCRIPTOR().get(0).setMIMETYPE(checksum);
+    
     File outputFile = Helper.createNewOutputFile(this.getOutputDirectory(),
         prefix, "eaf");
 

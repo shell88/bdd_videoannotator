@@ -159,14 +159,11 @@ public class AnnotationService {
         getAnnotationExporter().addStepAnnotation(stepAnnotations.get(i));
       }
       
-      if (videoOutputFile != "") {
-        String checksum = Helper.calcSha1Checksum(videoOutputFile);
-        getAnnotationExporter().setVideoReferenceFile(videoOutputFile, checksum);
-      } else {
-        getAnnotationExporter().setVideoReferenceFile(" ", " ");
-      }
-      getAnnotationExporter().endOfCurrentScenario(this.currentScenarioName);
-      
+      String checksum = Helper.calcSha1Checksum(videoOutputFile);
+     
+      getAnnotationExporter().endOfCurrentScenario(this.currentScenarioName,
+          videoOutputFile, checksum);
+
     } catch ( Exception e ) {
       throw new WebServiceException( "Could not write Annotation-Outputfile: " + e.getMessage());
       

@@ -34,24 +34,23 @@ public abstract class AnnotationExporter {
    *          the StepAnnotatin to be added
    */
   public abstract void addStepAnnotation(StepAnnotation step);
-  /**
-   * Adds the reference to the corresponding video file to the
-   * annotation-Document.
-   * 
-   * @param pathToVideoFile
-   *          FilePath to be set as video reference.
-   * @param checksum
-   *          The sha1-checksum to store in the annotation file
-   */
-  public abstract void setVideoReferenceFile(String pathToVideoFile,
-      String checksum);
 
 
   /**
    * Writes the AnnotationDocument to {@link #outputDirectory}.
    * 
+   * TODO: Kapseln in MetaData-Objekt + featureName (nicht mehr wie drei argumente laut clean code)
+   * 
+   * @param currentScenarioName Name of the current ended Scenario
+   * 
+   * @param pathToVideoFile
+   *          FilePath to be set as video reference.
+   * @param checksum
+   *          The sha1-checksum to store in the annotation file
+   * 
    * @throws Exception
    *           - thrown when writing the file is not possible
    */
-  public abstract void endOfCurrentScenario(String currentScenarioName) throws Exception;
+  public abstract void endOfCurrentScenario(String currentScenarioName,
+      String pathToVideoFile, String checksumVideo) throws Exception;
 }
