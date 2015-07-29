@@ -1,7 +1,8 @@
 # encoding: utf-8
 Feature: In order to have usable testlogs the server has to be reliable.
-
+  
   Scenario Outline: Synchronization between text and video
+    Given I have a ServerInstance with EAFOutputFormat
     Given I start a Scenario with description text "WaitScenario"
     When I add a Step "waitStep1",
     And I add a Step "waitStep2",

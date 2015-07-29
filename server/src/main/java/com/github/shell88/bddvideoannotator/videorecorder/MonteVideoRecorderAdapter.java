@@ -62,7 +62,7 @@ public class MonteVideoRecorderAdapter extends ScreenRecorder implements
     super(GraphicsEnvironment.getLocalGraphicsEnvironment()
         .getDefaultScreenDevice().getDefaultConfiguration(),
         new Rectangle(dim),
-        // the file format
+        // the file format                      //TODO: MIME_MP4 testing => for HTML-5 reports
         new Format(MediaTypeKey, MediaType.FILE, MimeTypeKey, MIME_AVI),
         // the output format for screen capture
         new Format(MediaTypeKey, MediaType.VIDEO, EncodingKey,

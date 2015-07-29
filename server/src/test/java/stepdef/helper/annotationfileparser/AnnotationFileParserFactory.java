@@ -6,6 +6,7 @@ import java.io.File;
 
 /**
  * Factory for different annotationFile-Formats.
+ * 
  * @author Hell
  *
  */
@@ -13,11 +14,13 @@ import java.io.File;
 public class AnnotationFileParserFactory {
 
   /**
-   * @param annotationFile The annotation file to be parsed.
-   * @return               the corresponding outputFile parser.
-   * @throws Throwable     If FileExtension is not supported.
+   * @param annotationFile
+   *          The annotation file to be parsed.
+   * @return the corresponding outputFile parser.
+   * @throws Throwable
+   *           If FileExtension is not supported.
    */
-  
+
   public static AnnotationFileParser getFileParser(File annotationFile)
       throws Throwable {
 

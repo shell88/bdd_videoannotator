@@ -6,7 +6,6 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static stepdef.helper.AssertExtensions.assertActualResultStepEquals;
 import static stepdef.helper.AssertExtensions.assertDurationEquals;
-
 import stepdef.helper.TestUtils;
 import stepdef.helper.annotationfileparser.AnnotationFileParserFactory;
 import stepdef.helper.annotationfileparser.ExpectedResultStep;
@@ -17,6 +16,8 @@ import com.github.shell88.bddvideoannotator.service.AnnotationService;
 import com.xuggle.xuggler.IContainer;
 
 import cucumber.api.DataTable;
+import cucumber.api.PendingException;
+import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import gherkin.formatter.model.DataTableRow;
@@ -34,21 +35,40 @@ public class WorkflowStepDef {
   private File videoOutputFile;
   private List<ExpectedResultStep> stepsExpected = new ArrayList<ExpectedResultStep>();
 
-
   /**
    * Initializes a new Test.
-   * @throws Throwable when subtestDirectory could not be generated.
+   * 
+   * @throws Throwable
+   *           when subtestDirectory could not be generated.
    */
   public WorkflowStepDef() throws Throwable {
     outputDirectory = TestUtils.getNewSubTestDirectory();
     System.out.println("--OutputDirectory: " + outputDirectory.getName());
-    serverInstance = new AnnotationService(outputDirectory.getAbsolutePath(),
-        "100", "100");
+    
+  }
+  
+  @Given("^I have a ServerInstance with EAFOutputFormat$")
+  public void i_have_a_ServerInstance_with_EAFOutputFormat() throws Throwable {
+    serverInstance = new AnnotationService("EAF",
+        outputDirectory.getAbsolutePath(), "100", "100");
+  }
+  
+  @Given("^I have a server that exports to HTML$")
+  public void i_have_a_server_that_exports_to_HTML() throws Throwable {
+    serverInstance = new AnnotationService("HTML",
+        outputDirectory.getAbsolutePath(), "100", "100");
+  }
+
+
+  @Then("^I should get a HTML report$")
+  public void i_should_get_a_HTML_report() throws Throwable {
+    // Write code here that turns the phrase above into concrete actions
+    throw new PendingException();
   }
 
   @When("^I start a Scenario with description text \"(.*?)\"$")
-  public void i_start_a_Scenario_with_description_text(String scenarioDescription)
-      throws Throwable {
+  public void i_start_a_Scenario_with_description_text(
+      String scenarioDescription) throws Throwable {
     serverInstance.startScenario(scenarioDescription);
   }
 
@@ -121,7 +141,8 @@ public class WorkflowStepDef {
   }
 
   @Then("^I should get an annotation file named \"(.*?)\",$")
-  public void i_should_get_an_annotation_file_named(String prefixFileName) throws Throwable {
+  public void i_should_get_an_annotation_file_named(String prefixFileName)
+      throws Throwable {
     annotationOutputFile = TestUtils
         .getLatestAnnotationOutputFileInDirectory(outputDirectory);
     assertTrue(annotationOutputFile != null
@@ -144,8 +165,7 @@ public class WorkflowStepDef {
         + resultExpected + " in " + annotationOutputFile.getName());
 
   }
-  
-  
+
   @Then("^I should get an annotation file named \"(.*?)\" containing the added steps$")
   public void i_should_get_an_annotation_file_named_containing_the_added_steps(
       String prefixFileName) throws Throwable {
@@ -155,11 +175,10 @@ public class WorkflowStepDef {
     assertEquals(stepsExpected.size(), stepsAnnotationFile.size());
 
     for (int i = 0; i < stepsExpected.size(); i++) {
-      assertActualResultStepEquals("Step " + i,
-          stepsExpected.get(i), stepsAnnotationFile.get(i));
+      assertActualResultStepEquals("Step " + i, stepsExpected.get(i),
+          stepsAnnotationFile.get(i));
     }
   }
- 
 
   @When("^I add a Result after (\\d+)$")
   public void i_add_a_Result_after(int secondsToWait) throws Throwable {
@@ -168,8 +187,8 @@ public class WorkflowStepDef {
   }
 
   @Then("^I should get a video and an annotation file named \"(.*?)\"$")
-  public void i_should_get_a_video_and_an_annotation_file_named(String prefixFileName)
-      throws Throwable {
+  public void i_should_get_a_video_and_an_annotation_file_named(
+      String prefixFileName) throws Throwable {
     this.i_should_get_a_video_with_file_named(prefixFileName);
     this.i_should_get_an_annotation_file_named(prefixFileName);
   }
@@ -178,9 +197,10 @@ public class WorkflowStepDef {
   public void the_video_should_have_a_length_of(int expectedSeconds)
       throws Throwable {
     IContainer container = IContainer.make();
-    int result = container.open( videoOutputFile.getAbsolutePath(),
+    int result = container.open(videoOutputFile.getAbsolutePath(),
         IContainer.Type.READ, null);
-    assertFalse("Could not open " +  videoOutputFile.getAbsolutePath(), result < 0);
+    assertFalse("Could not open " + videoOutputFile.getAbsolutePath(),
+        result < 0);
     assertDurationEquals(expectedSeconds,
         TimeUnit.MICROSECONDS.toMillis(container.getDuration()));
     container.close();
@@ -208,7 +228,7 @@ public class WorkflowStepDef {
       return;
     }
     long start = 0L;
-    
+
     for (int i = 1; i < steps.size(); i++) {
       assertTrue("Step " + i + " (start: " + steps.get(i).getMillisecondsFrom()
           + ", end: " + steps.get(i).getMillisecondsTo()
@@ -237,5 +257,5 @@ public class WorkflowStepDef {
     assertTrue("Checksum length of " + annotationOutputFile.getName() + "<= 5",
         checkSumFromFile.length() > 5);
   }
-  
+
 }

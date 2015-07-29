@@ -38,7 +38,6 @@ public abstract class AnnotationExporter {
 
   /**
    * Writes the AnnotationDocument to {@link #outputDirectory}.
-   * 
    * TODO: Kapseln in MetaData-Objekt + featureName (nicht mehr wie drei argumente laut clean code)
    * 
    * @param currentScenarioName Name of the current ended Scenario

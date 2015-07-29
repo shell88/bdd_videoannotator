@@ -1,6 +1,9 @@
 # encoding: utf-8
 Feature: To support a wide range of BDD-frameworks a platform independent server shoud provide handy methods
   to collect step annotations.
+ 
+  Background: ServerInstance
+  Given I have a ServerInstance with EAFOutputFormat
 
   Scenario: Add Steps to buffer (Cucumber-JVM)
     Given I start a Scenario with description text "HelloScenario"

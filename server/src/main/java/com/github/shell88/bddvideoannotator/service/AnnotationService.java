@@ -67,7 +67,13 @@ public class AnnotationService {
    * @param capturingWidth      {@link #videoWidth}
    * @param capturingHeight     {@link #videoHeight}
    */
-  public AnnotationService( String path,  String capturingWidth, String capturingHeight) {
+  public AnnotationService( String annotationOutputFormat, String path,  
+      String capturingWidth, String capturingHeight) {
+    
+    SupportedAnnotationFileExtension outputFormat =
+        SupportedAnnotationFileExtension.valueOf(annotationOutputFormat);
+    
+    this.annotationExporter = ExporterFactory.createAnnotationExporter(outputFormat);
     
     if (capturingWidth.equalsIgnoreCase("full")) {
       videoWidth = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
@@ -93,13 +99,6 @@ public class AnnotationService {
 
   }
   
-  private AnnotationExporter getAnnotationExporter() {
-    if (this.annotationExporter == null) {
-      this.annotationExporter = ExporterFactory
-          .createAnnotationExporter(SupportedAnnotationFileExtension.EAF);
-    }
-    return this.annotationExporter;
-  }
   
 
   /**
@@ -156,12 +155,12 @@ public class AnnotationService {
     try {
 
       for (int i = 0; stepAnnotations != null && i < stepAnnotations.size(); i++) {
-        getAnnotationExporter().addStepAnnotation(stepAnnotations.get(i));
+        this.annotationExporter.addStepAnnotation(stepAnnotations.get(i));
       }
       
       String checksum = Helper.calcSha1Checksum(videoOutputFile);
      
-      getAnnotationExporter().endOfCurrentScenario(this.currentScenarioName,
+      this.annotationExporter.endOfCurrentScenario(this.currentScenarioName,
           videoOutputFile, checksum);
 
     } catch ( Exception e ) {
@@ -198,7 +197,7 @@ public class AnnotationService {
     }
     
     this.outputDirectory = changedOutputDirectory;
-    this.getAnnotationExporter().setOutputDirectory(outputDirectory);
+    this.annotationExporter.setOutputDirectory(outputDirectory);
   }
 
   /**
@@ -355,10 +354,11 @@ public class AnnotationService {
     if (config.length < 4) {
       throw new IllegalArgumentException(
         "Misconfiguration, parameters to set: "
-        + "<publish_adress> <outputDirectory>, <video_width>, <video_height>");
+        + "<publish_adress> <outputFormat> <outputDirectory>, <video_width>, <video_height>");
     }
       
-    final AnnotationService service = new AnnotationService(config[1], config[2], config[3]);
+    final AnnotationService service = new AnnotationService(config[1],
+        config[1], config[2], config[3]);
     final Endpoint endpoint = Endpoint.publish(config[0], service);
 
     Runtime.getRuntime().addShutdownHook(new Thread() {
