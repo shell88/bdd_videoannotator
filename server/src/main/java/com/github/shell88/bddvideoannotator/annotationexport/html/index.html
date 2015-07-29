@@ -2,19 +2,19 @@
 <html ng-app="bddvideoviewer">
 <head>
     <meta charset="utf-8" />
-    <script src="angular.js.min"></script> 
+    <script src="angular.min.js"></script> 
     <script>
       var app = angular.module('bddvideoviewer', []);
       app.controller('BddVideoViewerCtrl', function($scope) {
                       <!-- will be replaced by HtmlAnnotationExport -->
-           $scope.scenarioName = #scenarioName ;
-           $scope.steps        = #scenariodata ;
-           $scope.video        = #video ;
+           $scope.scenarioName = [ #scenarioName ];
+           $scope.steps        = [ #steps ];
+           $scope.video        = [ #video ];
       });
     </script>
     
     <link href="bootstrap.min.css" rel="stylesheet" />
-    <title>$title</title>
+    <title>BDDVideoannotator Report</title>
     <style> video { width: 100%; }</style>
 </head>
     <body ng-controller="BddVideoViewerCtrl">
