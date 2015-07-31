@@ -39,7 +39,7 @@ public class MonteVideoRecorderAdapter extends ScreenRecorder implements
   /** The default number of bits per pixel for screen capturing. */
   private static final int DEFAULT_DEPTH_KEY_SCREEN_CAPTURE = 16;
 
-  /** The default interval between key framews for scree capturing. */
+  /** The default interval between key frames for screen capturing. */
   private static final int DEFAULT_KEY_FRAME_INTERVAL_SCREEN_CAPTURE = 15 * 60;
 
   /** The default number of Frames per second for mouse capturing. */
@@ -114,5 +114,5 @@ public class MonteVideoRecorderAdapter extends ScreenRecorder implements
   public String getPathToOutputFile() {
     return super.getCreatedMovieFiles().get(0).getPath();
   }
-
+  
 }

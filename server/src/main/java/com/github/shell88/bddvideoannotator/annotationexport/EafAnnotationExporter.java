@@ -210,7 +210,8 @@ public class EafAnnotationExporter extends AnnotationExporter {
   }
 
   @Override
-  public void endOfCurrentScenario(String currentScenarioName, String pathToVideofile, String checksum) throws Exception {
+  public void endOfCurrentScenario(String currentScenarioName, 
+      String pathToVideofile, String checksum) throws Exception {
 
     String prefix = "annotations";
 

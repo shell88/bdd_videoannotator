@@ -6,10 +6,10 @@
     <script>
       var app = angular.module('bddvideoviewer', []);
       app.controller('BddVideoViewerCtrl', function($scope) {
-                      <!-- will be replaced by HtmlAnnotationExport -->
-           $scope.scenarioName = [ #scenarioName ];
-           $scope.steps        = [ #steps ];
-           $scope.video        = [ #video ];
+           <!-- will be replaced by HtmlAnnotationExport -->
+           $scope.scenarioName =  #scenarioName ;
+           $scope.steps        =  [ #steps ];
+           $scope.video        =  #video ;
       });
     </script>
     
@@ -17,12 +17,19 @@
     <title>BDDVideoannotator Report</title>
     <style> video { width: 100%; }</style>
 </head>
+
     <body ng-controller="BddVideoViewerCtrl">
     
-    <div class="container">
-
-    <div class="col-md-4" ng-repeat="step in steps">
-    <a href="#" class="videotimelink" data-starttime="{{step.starttime}}" data-endtime="{{step.endtime}}" />
+    <div id="videobar">
+        <video id="video" width="300" height="300" controls>
+            <source src="{{video}}" type="video/mp4">
+        </video>
     </div>
-
+    <h2>{{scenarioName}}</h2>
+    <div class="col-md-4" ng-repeat="step in steps">
+     <a href="#" class="videotimelink" data-videoid="video" data-starttime="{{step.starttime}}" data-endtime="{{step.endtime}}">
+        {{step.text}}
+     </a>
+    </div>
+    </body>
 </html>

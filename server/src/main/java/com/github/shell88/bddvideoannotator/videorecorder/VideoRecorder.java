@@ -30,9 +30,11 @@ public interface VideoRecorder {
    */
 
   long getStartTimestamp();
-
+  
+  //TODO: getLatestVideoFile.... multiple Start/Stops will produce another video file
   /**
    * @return - Filepath where the video is stored.
    */
   String getPathToOutputFile();
+    
 }

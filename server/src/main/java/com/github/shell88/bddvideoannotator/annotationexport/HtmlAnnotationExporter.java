@@ -33,22 +33,25 @@ public class HtmlAnnotationExporter extends AnnotationExporter {
   public void endOfCurrentScenario(String scenarioName, String pathToVideoFile,
       String checksum) throws Exception {
 
-    copyAssetsToOutputDirectory();
-    
+    copyAssetsToOutputDirectory(); 
+   
     //Replacements
     File indexFileCopy = new File(getOutputDirectory(), "index.html");
     String content = FileUtils.readFileToString(indexFileCopy, "UTF-8");
     //TODO: implement with GSON
     //TODO: FileUtils in maven shade plugin
     content = content.replaceFirst(replaceIdentifierScenarioName, "'" + scenarioName + "'");
-    content = content.replaceFirst(replaceIdentifierVideoRef, "'" + pathToVideoFile + "'");
+    
+    content = content.replaceFirst(replaceIdentifierVideoRef, "'" 
+        +  new File(pathToVideoFile).getName() + "'");
 
-    String stepJSONString = "";
+    String stepJsonString = "";
     for (StepAnnotation step : steps) {
-      stepJSONString += "{ 'starttime': " + step.getMillisecondsFrom()
-          + ", 'endtime': " + step.getMillisecondsTo() + "}";
+      stepJsonString += "{ 'starttime': " + step.getMillisecondsFrom()
+          + ", 'endtime': " + step.getMillisecondsTo() + ", 'text': '"
+          + step.getSteptext() + "'" + "}";
     }
-    content = content.replaceFirst(replaceIdentifierSteps, stepJSONString);
+    content = content.replaceFirst(replaceIdentifierSteps, stepJsonString);
     FileUtils.writeStringToFile(indexFileCopy, content);
     // String fileContent =
 
