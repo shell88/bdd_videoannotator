@@ -56,7 +56,7 @@ public class WorkflowStepDef {
   @Given("^I have a server that exports to HTML$")
   public void i_have_a_server_that_exports_to_HTML() throws Throwable {
     serverInstance = new AnnotationService("HTML",
-        outputDirectory.getAbsolutePath(), "400", "400");
+        outputDirectory.getAbsolutePath(), "full", "full");
   }
 
 
