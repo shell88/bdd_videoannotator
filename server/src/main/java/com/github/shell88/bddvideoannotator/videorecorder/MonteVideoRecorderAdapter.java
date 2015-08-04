@@ -45,7 +45,8 @@ public class MonteVideoRecorderAdapter extends ScreenRecorder implements
   /** The default number of Frames per second for mouse capturing. */
   private static final Rational DEFAULT_FRAME_RATE_MOUSE_CAPTURE = Rational
       .valueOf(30);
-
+  
+  private long endTimestamp;
   /**
    * @param outputFile - outputfolder for the video file, the filename will be set when
    *          the video is started.
@@ -103,6 +104,7 @@ public class MonteVideoRecorderAdapter extends ScreenRecorder implements
   @Override
   public void stopVideoRecording() throws Exception {
     super.stop();
+    this.endTimestamp = System.currentTimeMillis();
   }
 
   @Override
@@ -113,6 +115,11 @@ public class MonteVideoRecorderAdapter extends ScreenRecorder implements
   @Override
   public String getPathToOutputFile() {
     return super.getCreatedMovieFiles().get(0).getPath();
+  }
+
+  @Override
+  public long getEndTimestamp() {
+    return this.endTimestamp;
   }
   
 }

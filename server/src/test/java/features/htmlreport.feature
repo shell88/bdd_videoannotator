@@ -6,6 +6,6 @@ Scenario: Sample
 Given I have a server that exports to HTML
 Given I start a Scenario with description text "WaitScenario"
 When I add a Step "waitStep1",
-And I add a Result after 5
+And I add a Result after 10
 And I stop the Scenario
 Then I should get a HTML report
