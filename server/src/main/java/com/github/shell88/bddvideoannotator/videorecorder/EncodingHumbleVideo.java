@@ -28,13 +28,11 @@ class EncodingHumbleVideo extends EncodingThread{
     
     final Rational framerate = Rational.make(1, imagesPerSeconds);
     muxer = Muxer.make(out.getAbsolutePath(),  null,  "mp4");
-    
     MuxerFormat format = muxer.getFormat();
     Codec codec = Codec.findEncodingCodecByName("libx264");
-    encoder = io.humble.video.Encoder.make(codec);
+    encoder = Encoder.make(codec);
     encoder.setWidth(screenBounds.width);
     encoder.setHeight(screenBounds.height);
-    
     final PixelFormat.Type pixelformat = PixelFormat.Type.PIX_FMT_YUV420P;
     encoder.setPixelFormat(pixelformat);
     encoder.setTimeBase(framerate);
@@ -47,8 +45,7 @@ class EncodingHumbleVideo extends EncodingThread{
     }
     /** Open the encoder. */
     encoder.open(null, null);
-    
-    
+      
     /** Add this stream to the muxer. */
     muxer.addNewStream(encoder);
     
@@ -87,6 +84,7 @@ class EncodingHumbleVideo extends EncodingThread{
     
     do {
       encoder.encode(packet, targetPicture);
+
       if (packet.isComplete()) {
         muxer.write(packet, false);
       }
