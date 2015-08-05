@@ -8,7 +8,6 @@ import java.awt.Robot;
 public class ScreenRecorderThread extends Thread implements ScreenShotProvider{
   
   private ScreenShotData latestScreenShotData;
-  
   private Rectangle screenBounds;
   private Robot robot;
 

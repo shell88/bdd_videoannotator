@@ -15,7 +15,6 @@ public class HtmlAnnotationExporter extends AnnotationExporter {
   private final String replaceIdentifierSteps = "#steps";
   private final String replaceIdentifierVideoRef = "#video";
 
-  private final String packagePrefix = "/com/github/shell88/bddvideoannotator/annotationexport/html";
   private final String[] assets = new String[] { "index.html",
       "angular.min.js", "bootstrap.min.css" };
 
@@ -54,15 +53,12 @@ public class HtmlAnnotationExporter extends AnnotationExporter {
     }
     content = content.replaceFirst(replaceIdentifierSteps, stepJsonString);
     FileUtils.writeStringToFile(indexFileCopy, content);
-    // String fileContent =
-
   }
   
   private void copyAssetsToOutputDirectory() {
 
     for (String assetName : assets) {
-      InputStream assetStream = getClass().getResourceAsStream(
-          packagePrefix + "/" + assetName);
+      InputStream assetStream = ClassLoader.getSystemResourceAsStream(assetName);
       if (assetStream == null) {
         // TODO use right exception type
         throw new RuntimeException("Could not find: " + assetName);
