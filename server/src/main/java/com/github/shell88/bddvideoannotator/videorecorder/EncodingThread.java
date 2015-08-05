@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
+import java.io.File;
 import java.net.URL;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -28,7 +29,7 @@ public abstract class EncodingThread extends Thread implements ScreenShotBuffer 
   }
   
   private void initializeMousePointerImage() {
-    URL resource = this.getClass().getResource("images/Cursor.png");
+    URL resource = ClassLoader.getSystemResource("Cursor.png");    
     if (resource == null) {
       System.err.println("Could not find mousePointerImage!");
     }

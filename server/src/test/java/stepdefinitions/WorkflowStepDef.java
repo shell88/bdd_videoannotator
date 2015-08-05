@@ -50,7 +50,7 @@ public class WorkflowStepDef {
   @Given("^I have a ServerInstance with EAFOutputFormat$")
   public void i_have_a_ServerInstance_with_EAFOutputFormat() throws Throwable {
     serverInstance = new AnnotationService("EAF",
-        outputDirectory.getAbsolutePath(), "100", "100");
+        outputDirectory.getAbsolutePath(), "full", "full");
   }
   
   @Given("^I have a server that exports to HTML$")

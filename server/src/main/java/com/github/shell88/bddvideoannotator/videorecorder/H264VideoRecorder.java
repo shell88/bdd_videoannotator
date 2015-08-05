@@ -10,8 +10,7 @@ import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
 import java.util.Timer;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+
 
 public class H264VideoRecorder implements VideoRecorder {
 
@@ -27,7 +26,7 @@ public class H264VideoRecorder implements VideoRecorder {
   private long startRecordingTimestamp;
   private long endRecordingTimestamp;
 
-  private final int imagesPerSeconds = 10;
+  private final int imagesPerSeconds = 15;
 
   public H264VideoRecorder(File outputDirectory,
       String fileNamePrefix, Dimension capturingArea) throws IOException,
@@ -47,7 +46,7 @@ public class H264VideoRecorder implements VideoRecorder {
 
     double frameRateMillis = 1000 / imagesPerSeconds;
     int screenGrabRateMillis = max(1, (int) frameRateMillis);
-
+       
     frameTimer = new Timer("FrameSynchronizer", false);
     frameSynchronizer = new FrameSynchronizer(recorderThread, encoderThread);
     frameTimer.scheduleAtFixedRate(frameSynchronizer, 0, screenGrabRateMillis);
