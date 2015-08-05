@@ -9,6 +9,7 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.io.File;
 import java.io.IOException;
+import java.util.Timer;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -17,10 +18,11 @@ public class H264VideoRecorder implements VideoRecorder {
   private File outputFile;
   private Dimension capturingArea;
   
-  private ScheduledThreadPoolExecutor scheduledExecutor;
+  private Timer frameTimer;
   private FrameSynchronizer frameSynchronizer; 
   private ScreenRecorderThread recorderThread;
   private EncodingThread encoderThread;
+  
 
   private long startRecordingTimestamp;
   private long endRecordingTimestamp;
@@ -40,14 +42,16 @@ public class H264VideoRecorder implements VideoRecorder {
   public void startVideoRecording() throws Exception {   
     recorderThread = new ScreenRecorderThread(new Rectangle(capturingArea),
         encoderThread);
-    scheduledExecutor = new ScheduledThreadPoolExecutor(1);
     encoderThread = new H264EncodingHumbleVideo(outputFile, imagesPerSeconds,
         capturingArea);
-    frameSynchronizer = new FrameSynchronizer(recorderThread, encoderThread);
+
     double frameRateMillis = 1000 / imagesPerSeconds;
     int screenGrabRateMillis = max(1, (int) frameRateMillis);
-    scheduledExecutor.scheduleAtFixedRate(frameSynchronizer, 0,
-        screenGrabRateMillis, TimeUnit.MILLISECONDS);
+
+    frameTimer = new Timer("FrameSynchronizer", false);
+    frameSynchronizer = new FrameSynchronizer(recorderThread, encoderThread);
+    frameTimer.scheduleAtFixedRate(frameSynchronizer, 0, screenGrabRateMillis);
+    
     recorderThread.start();
     encoderThread.start();
     startRecordingTimestamp = System.currentTimeMillis();
@@ -55,11 +59,12 @@ public class H264VideoRecorder implements VideoRecorder {
 
   @Override
   public void stopVideoRecording() throws Exception {
-    scheduledExecutor.shutdown();
+    frameTimer.cancel();
     recorderThread.interrupt();
     endRecordingTimestamp = System.currentTimeMillis();
     encoderThread.recordingFinalized();
     encoderThread.join();
+    
   }
 
   @Override

@@ -1,8 +1,9 @@
 package com.github.shell88.bddvideoannotator.videorecorder;
 
+import java.util.TimerTask;
+
 //TODO: Handling of EncodingThread/Recorder Thread, especially for error handling purposes
-//TODO: Test TimerTask (eventually it will guarantee screenshots!)
-public class FrameSynchronizer implements Runnable{
+public class FrameSynchronizer extends TimerTask{
   
   private ScreenShotBuffer targetQueue;
   private ScreenShotProvider source;
