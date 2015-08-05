@@ -12,10 +12,7 @@ import java.io.IOException;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-//TODO: Mauszeiger funktioniert noch nicht
-//TODO: length of video images PerSeconds
-
-public class HtmlJCodecMp4VideoRecorder implements VideoRecorder {
+public class H264VideoRecorder implements VideoRecorder {
 
   private File outputFile;
   private Dimension capturingArea;
@@ -30,7 +27,7 @@ public class HtmlJCodecMp4VideoRecorder implements VideoRecorder {
 
   private final int imagesPerSeconds = 10;
 
-  public HtmlJCodecMp4VideoRecorder(File outputDirectory,
+  public H264VideoRecorder(File outputDirectory,
       String fileNamePrefix, Dimension capturingArea) throws IOException,
       AWTException, InterruptedException {
     outputFile = Helper.createNewOutputFile(outputDirectory, fileNamePrefix,
@@ -40,22 +37,20 @@ public class HtmlJCodecMp4VideoRecorder implements VideoRecorder {
   }
 
   @Override
-  public void startVideoRecording() throws Exception {
-    double frameRateMillis = 1000 / imagesPerSeconds;
-    int screenGrabRateMillis = max(1, (int) frameRateMillis);
-    // encoderThread = new EncodingThreadJCodec(outputFile, imagesPerSeconds);
+  public void startVideoRecording() throws Exception {   
     recorderThread = new ScreenRecorderThread(new Rectangle(capturingArea),
         encoderThread);
     scheduledExecutor = new ScheduledThreadPoolExecutor(1);
-    encoderThread = new EncodingHumbleVideo(outputFile, imagesPerSeconds,
+    encoderThread = new H264EncodingHumbleVideo(outputFile, imagesPerSeconds,
         capturingArea);
     frameSynchronizer = new FrameSynchronizer(recorderThread, encoderThread);
+    double frameRateMillis = 1000 / imagesPerSeconds;
+    int screenGrabRateMillis = max(1, (int) frameRateMillis);
     scheduledExecutor.scheduleAtFixedRate(frameSynchronizer, 0,
         screenGrabRateMillis, TimeUnit.MILLISECONDS);
     recorderThread.start();
     encoderThread.start();
     startRecordingTimestamp = System.currentTimeMillis();
-
   }
 
   @Override
@@ -65,7 +60,6 @@ public class HtmlJCodecMp4VideoRecorder implements VideoRecorder {
     endRecordingTimestamp = System.currentTimeMillis();
     encoderThread.recordingFinalized();
     encoderThread.join();
-    System.out.println("Duration of recording: " + (this.getEndTimestamp() - this.getStartTimestamp()));
   }
 
   @Override

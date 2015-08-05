@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+//FIXME: export on Ubuntu fails
 public class HtmlAnnotationExporter extends AnnotationExporter {
 
   private final String replaceIdentifierScenarioName = "#scenarioName";

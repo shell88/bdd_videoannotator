@@ -6,7 +6,7 @@ import com.github.shell88.bddvideoannotator.annotationexport.HtmlAnnotationExpor
 import com.github.shell88.bddvideoannotator.annotationexport.StepAnnotation;
 import com.github.shell88.bddvideoannotator.annotationexport.StepResult;
 import com.github.shell88.bddvideoannotator.annotationexport.SupportedAnnotationFileExtension;
-import com.github.shell88.bddvideoannotator.videorecorder.HtmlJCodecMp4VideoRecorder;
+import com.github.shell88.bddvideoannotator.videorecorder.H264VideoRecorder;
 import com.github.shell88.bddvideoannotator.videorecorder.MonteVideoRecorderAdapter;
 import com.github.shell88.bddvideoannotator.videorecorder.VideoRecorder;
 
@@ -234,7 +234,7 @@ public class AnnotationService {
       // instatiated in constructor
       // and should be reusable
       if (this.annotationExporter instanceof HtmlAnnotationExporter) {
-        videoRecorder = new HtmlJCodecMp4VideoRecorder(outputDirectory, prefix, dim);
+        videoRecorder = new H264VideoRecorder(outputDirectory, prefix, dim);
       } else {
         videoRecorder = new MonteVideoRecorderAdapter(
             Helper.createNewOutputFile(outputDirectory, prefix, "avi"), dim);

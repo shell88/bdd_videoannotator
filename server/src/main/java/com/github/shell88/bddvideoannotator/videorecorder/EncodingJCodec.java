@@ -1,14 +1,11 @@
 package com.github.shell88.bddvideoannotator.videorecorder;
 
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.Dimension;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.jcodec.codecs.h264.H264Encoder;
 import org.jcodec.codecs.h264.H264Utils;
@@ -37,7 +34,8 @@ public class EncodingJCodec extends EncodingThread{
   private FramesMP4MuxerTrack outTrack;
   private Picture toEncode;
   
-  public EncodingJCodec(File out, int imagesPerSeconds) throws IOException {
+  public EncodingJCodec(File out, int imagesPerSeconds, Dimension screenBounds) throws IOException {
+    super(screenBounds);
     this.imagesPerSeconds = imagesPerSeconds;
     this.ch = NIOUtils.writableFileChannel(out);
     // Transform to convert between RGB and YUV

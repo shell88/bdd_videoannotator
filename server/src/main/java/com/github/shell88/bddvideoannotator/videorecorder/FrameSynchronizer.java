@@ -1,15 +1,7 @@
 package com.github.shell88.bddvideoannotator.videorecorder;
 
-
-/*
- * Idee: Thread 1: macht immer Screenshots und hat immer einen aktuellen Screenshot parat
- *       FrameHandler ist auf die FrameRate getimed und ruft von Thread 1 den letzten aktuellen Screenshot ab
- *       (immer den aktuellesten)
- *       Framehandler fügt diesen sodann in eine Encoding Queue rein die bis zum letzten Frame abgearbeitet
- *       wird (per join synchronisiert)
- *            
- */
-
+//TODO: Handling of EncodingThread/Recorder Thread, especially for error handling purposes
+//TODO: Test TimerTask (eventually it will guarantee screenshots!)
 public class FrameSynchronizer implements Runnable{
   
   private ScreenShotBuffer targetQueue;

@@ -16,7 +16,8 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-class EncodingHumbleVideo extends EncodingThread{
+//TODO: stop debugging messages from JNI-Encoding-Library
+class H264EncodingHumbleVideo extends EncodingThread{
 
   private Muxer muxer;
   private Encoder encoder;
@@ -24,11 +25,11 @@ class EncodingHumbleVideo extends EncodingThread{
   private MediaPicture targetPicture;
   private MediaPacket packet;
   
-  public EncodingHumbleVideo(File out, int imagesPerSeconds, Dimension screenBounds) throws InterruptedException, IOException{
-    
+  public H264EncodingHumbleVideo(File out, int imagesPerSeconds, Dimension screenBounds) throws InterruptedException, IOException{
+    super(screenBounds);
     final Rational framerate = Rational.make(1, imagesPerSeconds);
     muxer = Muxer.make(out.getAbsolutePath(),  null,  "mp4");
-    MuxerFormat format = muxer.getFormat();
+ 
     Codec codec = Codec.findEncodingCodecByName("libx264");
     encoder = Encoder.make(codec);
     encoder.setWidth(screenBounds.width);
@@ -39,6 +40,7 @@ class EncodingHumbleVideo extends EncodingThread{
     
     targetPicture = MediaPicture.make(encoder.getWidth(),  encoder.getHeight(), pixelformat);
     targetPicture.setTimeBase(framerate);
+    MuxerFormat format = muxer.getFormat();
     
     if (format.getFlag(MuxerFormat.Flag.GLOBAL_HEADER)) {
       encoder.setFlag(Encoder.Flag.FLAG_GLOBAL_HEADER, true);
