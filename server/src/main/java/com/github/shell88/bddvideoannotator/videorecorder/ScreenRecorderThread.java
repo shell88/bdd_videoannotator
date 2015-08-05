@@ -5,28 +5,40 @@ import java.awt.MouseInfo;
 import java.awt.Rectangle;
 import java.awt.Robot;
 
-
-public class ScreenRecorderThread extends Thread {
-
+public class ScreenRecorderThread extends Thread implements ScreenShotProvider{
+  
+  private ScreenShotData latestScreenShotData;
+  
   private Rectangle screenBounds;
   private Robot robot;
-  private ImageEncoder encoder;
 
-  public ScreenRecorderThread(Rectangle screenBounds, ImageEncoder encoder)
+
+  public ScreenRecorderThread(Rectangle screenBounds, ScreenShotBuffer encoder)
       throws AWTException {
     this.screenBounds = screenBounds;
-    this.encoder = encoder;
     robot = new Robot();
+    //initializing Screenshot
+    acutalizeScreenShot();
   }
 
   @Override
   public void run() {
-    robot.createScreenCapture(screenBounds);
+    while (!this.isInterrupted()) {
+      acutalizeScreenShot();
+    }
+  }
+
+  private void acutalizeScreenShot() {
     ScreenShotData data = new ScreenShotData();
     data.image = robot.createScreenCapture(screenBounds);
     data.timestamp = System.currentTimeMillis();
     data.mousePointerLocation = MouseInfo.getPointerInfo().getLocation();
-    encoder.addScreenShotData(data);
+    this.latestScreenShotData = data;
+  }
+
+  @Override
+  public ScreenShotData getLatestScreenShot() {
+    return this.latestScreenShotData;
   }
 
 }

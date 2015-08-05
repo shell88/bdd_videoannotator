@@ -1,5 +1,5 @@
 package com.github.shell88.bddvideoannotator.videorecorder;
 
-public interface ImageEncoder {
+public interface ScreenShotBuffer {
   public void addScreenShotData(ScreenShotData data);
 }

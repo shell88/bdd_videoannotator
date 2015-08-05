@@ -3,7 +3,7 @@ package com.github.shell88.bddvideoannotator.videorecorder;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public abstract class EncodingThread extends Thread implements ImageEncoder {
+public abstract class EncodingThread extends Thread implements ScreenShotBuffer {
 
   private boolean recordingFinalized = false;
   private Queue<ScreenShotData> imageBuffer;

@@ -18,8 +18,10 @@ import java.util.concurrent.TimeUnit;
 public class HtmlJCodecMp4VideoRecorder implements VideoRecorder {
 
   private File outputFile;
-
+  private Dimension capturingArea;
+  
   private ScheduledThreadPoolExecutor scheduledExecutor;
+  private FrameSynchronizer frameSynchronizer; 
   private ScreenRecorderThread recorderThread;
   private EncodingThread encoderThread;
 
@@ -33,29 +35,33 @@ public class HtmlJCodecMp4VideoRecorder implements VideoRecorder {
       AWTException, InterruptedException {
     outputFile = Helper.createNewOutputFile(outputDirectory, fileNamePrefix,
         "mp4");
-
-    encoderThread = new EncodingHumbleVideo(outputFile, imagesPerSeconds,
-        capturingArea);
-    // encoderThread = new EncodingThreadJCodec(outputFile, imagesPerSeconds);
-    recorderThread = new ScreenRecorderThread(new Rectangle(capturingArea),
-        encoderThread);
-    scheduledExecutor = new ScheduledThreadPoolExecutor(1);
+    this.capturingArea = capturingArea;
+      
   }
 
   @Override
   public void startVideoRecording() throws Exception {
     double frameRateMillis = 1000 / imagesPerSeconds;
     int screenGrabRateMillis = max(1, (int) frameRateMillis);
-
-    startRecordingTimestamp = System.currentTimeMillis();
-    scheduledExecutor.scheduleAtFixedRate(recorderThread, screenGrabRateMillis,
+    // encoderThread = new EncodingThreadJCodec(outputFile, imagesPerSeconds);
+    recorderThread = new ScreenRecorderThread(new Rectangle(capturingArea),
+        encoderThread);
+    scheduledExecutor = new ScheduledThreadPoolExecutor(1);
+    encoderThread = new EncodingHumbleVideo(outputFile, imagesPerSeconds,
+        capturingArea);
+    frameSynchronizer = new FrameSynchronizer(recorderThread, encoderThread);
+    scheduledExecutor.scheduleAtFixedRate(frameSynchronizer, 0,
         screenGrabRateMillis, TimeUnit.MILLISECONDS);
+    recorderThread.start();
     encoderThread.start();
+    startRecordingTimestamp = System.currentTimeMillis();
+
   }
 
   @Override
   public void stopVideoRecording() throws Exception {
     scheduledExecutor.shutdown();
+    recorderThread.interrupt();
     endRecordingTimestamp = System.currentTimeMillis();
     encoderThread.recordingFinalized();
     encoderThread.join();
