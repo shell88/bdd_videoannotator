@@ -366,17 +366,24 @@ public class AnnotationService {
    *          to store the annotation-files/video-files 2 Video-with for the
    *          capturing area 3 Video-height for the capturing area If the
    *          capturing area is invalid, no video recording will be started.
+   * @throws InterruptedException 
    */
 
-  public static void main(String[] config) {
-    if (config.length < 4) {
+  public static void main(String[] config) throws InterruptedException {
+    if (config.length < 5) {
       throw new IllegalArgumentException(
           "Misconfiguration, parameters to set: "
               + "<publish_adress>, <outputFormat>, <outputDirectory>, <video_width>, <video_height>");
     }
 
     final AnnotationService service = new AnnotationService(config[1],
-        config[1], config[2], config[3]);
+        config[2], config[3], config[4]);
+    
+    
+    service.startVideoRecording();
+    Thread.sleep(5000);
+    service.stopVideoRecording();
+
     final Endpoint endpoint = Endpoint.publish(config[0], service);
 
     Runtime.getRuntime().addShutdownHook(new Thread() {

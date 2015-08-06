@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.net.URL;
 import java.util.Queue;
@@ -13,13 +14,17 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public abstract class EncodingThread extends Thread implements ScreenShotBuffer {
 
   private Dimension capturingArea;
+  private File outputVideo;
+  private int screensPerSeconds;
   
   private boolean recordingFinalized = false;
   private Queue<ScreenShotData> encodingQueue;
   private int frameNo = 0;
   private Image mousePointerImage;
   
-  public EncodingThread(Dimension capturingArea) {
+  public EncodingThread(File outputVideo, int screensPerSeconds, Dimension capturingArea) {
+    this.outputVideo = outputVideo;
+    this.screensPerSeconds = screensPerSeconds;
     this.capturingArea = capturingArea;
     this.encodingQueue = new ConcurrentLinkedQueue<ScreenShotData>();
     initializeMousePointerImage();
@@ -36,7 +41,15 @@ public abstract class EncodingThread extends Thread implements ScreenShotBuffer 
     mousePointerImage =  Toolkit.getDefaultToolkit().createImage(resource);
   }
 
-  public int getCurrentFrameNumber() {
+  protected File getVideoOutputFile() {
+    return this.outputVideo;
+  }
+
+  protected int getScreensPerSeconds() {
+    return this.screensPerSeconds;
+  }
+
+  protected int getCurrentFrameNumber() {
     return frameNo;
   }
   
@@ -53,7 +66,7 @@ public abstract class EncodingThread extends Thread implements ScreenShotBuffer 
       if (data != null) {
         long startEncoding = System.currentTimeMillis();
         addMousePointerToScreenShot(data);
-        encodeScreenShotData(data);
+        encodeScreenShot(data.image);
         frameNo++;
         System.out.println("Encoding frame " + frameNo + " took: "
             + (System.currentTimeMillis() - startEncoding));
@@ -85,7 +98,7 @@ public abstract class EncodingThread extends Thread implements ScreenShotBuffer 
         data.mousePointerLocation.y, null);
   }
 
-  public abstract void encodeScreenShotData(ScreenShotData data);
+  public abstract void encodeScreenShot(BufferedImage data);
 
   public abstract void finish();
 }

@@ -41,8 +41,8 @@ public class H264VideoRecorder implements VideoRecorder {
   public void startVideoRecording() throws Exception {   
     recorderThread = new ScreenRecorderThread(new Rectangle(capturingArea),
         encoderThread);
-    encoderThread = new H264EncodingHumbleVideo(outputFile, imagesPerSeconds,
-        capturingArea);
+    encoderThread = new H264EncodingJCodec(outputFile, imagesPerSeconds,
+        capturingArea); 
 
     double frameRateMillis = 1000 / imagesPerSeconds;
     int screenGrabRateMillis = max(1, (int) frameRateMillis);

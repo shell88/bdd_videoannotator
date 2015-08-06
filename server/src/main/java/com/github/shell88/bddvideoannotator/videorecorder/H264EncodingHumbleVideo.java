@@ -26,7 +26,7 @@ class H264EncodingHumbleVideo extends EncodingThread{
   private MediaPacket packet;
   
   public H264EncodingHumbleVideo(File out, int imagesPerSeconds, Dimension screenBounds) throws InterruptedException, IOException{
-    super(screenBounds);
+    super(out, imagesPerSeconds, screenBounds);
     final Rational framerate = Rational.make(1, imagesPerSeconds);
     muxer = Muxer.make(out.getAbsolutePath(),  null,  "mp4");
  
@@ -54,6 +54,8 @@ class H264EncodingHumbleVideo extends EncodingThread{
     /** And open the muxer for business. */
     muxer.open(null, null);
     packet = MediaPacket.make();
+    System.out.println("JNI LIBARARY PATH: " + System.getProperty("java.library.path"));
+
   }
   
   
@@ -75,8 +77,8 @@ class H264EncodingHumbleVideo extends EncodingThread{
   }
 
   @Override
-  public void encodeScreenShotData(ScreenShotData data) {
-    BufferedImage converted = convertToType(data.image,
+  public void encodeScreenShot(BufferedImage image) {
+    BufferedImage converted = convertToType(image,
         BufferedImage.TYPE_3BYTE_BGR);
     if (converter == null) {
       converter = MediaPictureConverterFactory.createConverter(converted,
