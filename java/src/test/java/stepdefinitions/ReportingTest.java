@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -40,6 +41,10 @@ public class ReportingTest {
   private CucumberReportingAdapter mockedAdapter;
   private String[] expectedSteps;
   private File subTestDirectory;
+  
+  private int scenariosToStop = 0;
+  //TODO: use only orderedVerifier
+  private InOrder orderedVerifier;
 
   @Given("^i have an instance of the BDD-Adapter for Cucumber-JVM with a mocked server connection$")
   public void i_have_an_instance_of_the_BDD_Adapter_for_Cucumber_JVM_with_a_mocked_server_connection()
@@ -49,6 +54,7 @@ public class ReportingTest {
     when(mockedServerConnector.startServerProcess()).thenReturn(mockedClient);
     when(mockedServerConnector.getServerClient()).thenReturn(mockedClient);
     mockedAdapter = new CucumberReportingAdapter(mockedServerConnector);
+    orderedVerifier = inOrder(mockedClient);
    
   }
 
@@ -110,22 +116,26 @@ public class ReportingTest {
         .getThrownExceptions().size() == 0);
   }
 
-  @Then("^the Adapter should send following steps for the scenario \"(.*?)\":$")
-  public void the_Adapter_should_send_following_steps_for_the_scenario(
-      String scenarioName, String stepList) throws Throwable {
-    InOrder orderedVerifier = inOrder(mockedClient);
-    orderedVerifier.verify(mockedClient).startScenario(
-        scenarioName);
-    
-    expectedSteps = stepList.split("\n");
+  @Then("^the Adapter should report the feature \"([^\"]*)\"$")
+  public void the_Adapter_should_report_the_feature(String featureTextExpected) throws Throwable {
+      // Write code here that turns the phrase above into concrete actions
+    orderedVerifier.verify(mockedClient).setFeatureText(featureTextExpected);
+  }
+
+  @Then("^the Adapter should report following steps:$")
+  public void the_Adapter_should_report_following_steps(String stepListExpected) throws Throwable {
+     
+    // Write code here that turns the phrase above into concrete actions
+    expectedSteps = stepListExpected.split("\n");
     
     for (int i = 0; i < expectedSteps.length; i++) {
       expectedSteps[i] = expectedSteps[i].trim();
       orderedVerifier.verify(mockedClient).addStepToBuffer(eq(expectedSteps[i]),
               any(StringArrayArray.class));
     }
-    orderedVerifier.verify(mockedClient).stopScenario();
+    
   }
+  
 
   @Then("^the Adapter should report the scenario \"(.*?)\"$")
   public void the_Adapter_should_report_the_scenario(String scenarioName)
@@ -135,10 +145,11 @@ public class ReportingTest {
      * but ignored the second time from the server (desired behaviour)
      */
     verify(mockedClient, atLeastOnce()).startScenario(scenarioName);
-    verify(mockedClient, times(1)).stopScenario();
+    scenariosToStop++;
+    verify(mockedClient, atLeast(scenariosToStop)).stopScenario();
   }
   
-
+  //TODO: simplify so that no position is necessary in feature file
   @Then("^the Adapter should send the steptext: \"(.*?)\" with the datatable at position (\\d+)$")
   public void the_Adapter_should_send_the_steptext_with_the_datatable(
       String steptext, int position, String datatable) throws Throwable {

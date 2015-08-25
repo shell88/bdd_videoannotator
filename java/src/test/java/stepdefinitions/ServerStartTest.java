@@ -7,7 +7,6 @@ import com.github.shell88.bddvideoannotator.javaadapters.ServerConnector;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 
-
 public class ServerStartTest {
 
   private ServerConnector connector;
@@ -21,10 +20,8 @@ public class ServerStartTest {
   }
 
   @Then("^i must be able to connect to the server functions without an error$")
-  public void i_must_be_able_to_connect_to_the_server_functions_without_an_error()
-      throws Throwable {
-      connector.getServerClient().changeOutputDirectory(".");
-
+  public void i_must_be_able_to_connect_to_the_server_functions_without_an_error() throws Throwable {
+    connector.getServerClient().changeOutputDirectory(".");
   }
 
   @Then("^i must be able to stop the server$")

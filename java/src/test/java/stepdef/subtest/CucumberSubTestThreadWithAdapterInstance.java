@@ -95,7 +95,7 @@ public class CucumberSubTestThreadWithAdapterInstance extends Thread {
       this.getUncaughtExceptionHandler().uncaughtException(this, e1);
       return;
     }
-
+    //TODO: Use proxy class like in PHP project
     URLClassLoader classLoader = new URLClassLoader(urlstoLoad);
     this.setContextClassLoader(classLoader);
     

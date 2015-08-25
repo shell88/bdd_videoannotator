@@ -9,6 +9,7 @@ Feature: In order to have usable testlogs the server has to be reliable.
     And I add a Result after <waitsec2>
     And I stop the Scenario
     Then I should get a video and an annotation file named "WaitScenario"
+    And the annotation file should contain the scenarioName "WaitScenario"
     And the video should have a length of <totalsec>
     And step 1 should be annotated with a duration of <waitsec1>
     And step 2 should be annotated with a duration of <waitsec2>

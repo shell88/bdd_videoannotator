@@ -25,6 +25,16 @@ public interface AnnotationService {
 
     /**
      * 
+     * @param featureText
+     */
+    @WebMethod
+    @Action(input = "http://service.bddvideoannotator.shell88.github.com/AnnotationService/setFeatureTextRequest", output = "http://service.bddvideoannotator.shell88.github.com/AnnotationService/setFeatureTextResponse")
+    public void setFeatureText(
+        @WebParam(name = "featureText", partName = "featureText")
+        String featureText);
+
+    /**
+     * 
      * @param scenarioName
      */
     @WebMethod

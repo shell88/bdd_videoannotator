@@ -11,6 +11,7 @@ Feature: To support a wide range of BDD-frameworks a platform independent server
     And I stop the Scenario
     Then I should get a video with file named "HelloScenario"
     And I should get an annotation file named "HelloScenario",
+    And the annotation file should contain the scenarioName "HelloScenario"
     And the annotation file should contain steptext "hello step" with result "SUCCESS"
     And the annotation file should contain steptext "hello step2" with result "FAILURE"
     
@@ -18,10 +19,11 @@ Feature: To support a wide range of BDD-frameworks a platform independent server
     Given I start a Scenario with description text "HelloScenario"
     When I add a Step "hello step" with result "SUCCESS" after 3 Seconds,
     When I add a Step "hello step2" with result "ERROR" after 2 Seconds,
-    And I stop the Scenario
+    And I stop the Scenario  
     Then I should get a video with file named "HelloScenario"
     And I should get an annotation file named "HelloScenario" containing the added steps
-
+    And the annotation file should contain the scenarioName "HelloScenario"
+    
   Scenario: Use of datatables
     Given I start a Scenario with description text "HelloScenario"
     When I add a Step "hello step" with Result "SUCCESS" and following Sample-Data:
@@ -31,3 +33,5 @@ Feature: To support a wide range of BDD-frameworks a platform independent server
       | 2,34   | null     |
     And I stop the Scenario
     Then I should get an annotation file named "HelloScenario" containing the added steps
+     And the annotation file should contain the scenarioName "HelloScenario"
+    

@@ -2,6 +2,8 @@ package stepdef.helper;
 
 import static org.junit.Assert.assertTrue;
 
+import com.github.shell88.bddvideoannotator.annotationfile.exporter.Helper;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.comparator.LastModifiedFileComparator;
 
@@ -31,7 +33,7 @@ public class TestUtils {
    */
   public static File getLatestAnnotationOutputFileInDirectory(File directory)
       throws IOException {
-    File[] filesInDir = getAnnotationFilesInDirectory(directory);
+    File[] filesInDir = Helper.getAnnotationFilesInDirectory(directory);
     Arrays.sort(filesInDir, LastModifiedFileComparator.LASTMODIFIED_REVERSE);
     if (filesInDir.length > 0) {
       return filesInDir[0];
@@ -39,31 +41,7 @@ public class TestUtils {
     return null;
   }
 
-  /**
-   * Returns all AnnotationFiles in a direcory based on the supported
-   * FileExtensions specified in @see SupportedAnnotationFileExtension.
-   * 
-   * @param directory
-   *          - directory to search for annotation files
-   * @return - Array of AnnotationFiles in the specified directory
-   * @throws IOException When reading the directory fails.
-   */
-  public static File[] getAnnotationFilesInDirectory(File directory)
-      throws IOException {
-    FilenameFilter eafFilter = new FilenameFilter() {
-      public boolean accept(File dir, String name) {
-        for (SupportedAnnotationFileExtension extension : SupportedAnnotationFileExtension
-            .values()) {
-          if (name.toLowerCase().endsWith(extension.toString().toLowerCase())) {
-            return true;
-          }
-        }
-        return false;
-      }
-    };
-
-    return directory.listFiles(eafFilter);
-  }
+  
 
   /**
    * @param directory
@@ -108,6 +86,7 @@ public class TestUtils {
         "Could not create Directory for SubTest: "
             + newSubTestDirectory.getPath(), created);
     subTestDirectories.add(newSubTestDirectory);
+    System.out.println("--OutputDirectory: " + newSubTestDirectory.getName());
     return newSubTestDirectory;
   }
 

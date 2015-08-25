@@ -1,9 +1,11 @@
 package com.github.shell88.bddvideoannotator.service;
 
-import com.github.shell88.bddvideoannotator.annotationexport.AnnotationExporter;
-import com.github.shell88.bddvideoannotator.annotationexport.EafAnnotationExport;
-import com.github.shell88.bddvideoannotator.annotationexport.StepAnnotation;
-import com.github.shell88.bddvideoannotator.annotationexport.StepResult;
+import com.github.shell88.bddvideoannotator.annotationfile.exporter.AnnotationExporter;
+import com.github.shell88.bddvideoannotator.annotationfile.exporter.EafAnnotationExporter;
+import com.github.shell88.bddvideoannotator.annotationfile.exporter.Helper;
+import com.github.shell88.bddvideoannotator.annotationfile.exporter.ScenarioAnnotationsDto;
+import com.github.shell88.bddvideoannotator.annotationfile.exporter.StepAnnotation;
+import com.github.shell88.bddvideoannotator.annotationfile.exporter.StepResult;
 import com.github.shell88.bddvideoannotator.videorecorder.MonteVideoRecorderAdapter;
 import com.github.shell88.bddvideoannotator.videorecorder.VideoRecorder;
 
@@ -21,35 +23,45 @@ import javax.xml.ws.WebServiceException;
 
 /**
  * Main Class for starting the soap-based annotation service.
+ * 
  * @author Hell
  */
 
 @WebService(name = "AnnotationService")
 @SOAPBinding(style = SOAPBinding.Style.RPC)
 public class AnnotationService {
-  
-  /**List of buffered step_annotations. */
+
+  private AnnotationExporter annotationExporter;
+
+  /** List of buffered step_annotations. */
   private ArrayList<StepAnnotation> stepAnnotations;
-  /** The systemTimestamp when the scenario was started using
-   * {@link #startScenario(String)}. */
-  private Long scenarioStartTimestamp; 
-  /** The position of the last added stepResult.*/
+  /**
+   * The systemTimestamp when the scenario was started using
+   * {@link #startScenario(String)}.
+   */
+  private Long scenarioStartTimestamp;
+  /** The position of the last added stepResult. */
   private int resultPos;
-  /** Represents the end timestamp of the last result
-   *  {@link #resultPos}.*/
+  /**
+   * Represents the end timestamp of the last result {@link #resultPos}.
+   */
   private Long currentEndTimestamp;
-  /** Description of the currentScenario
-    {@link #currentScenarioName}.*/
+
+  private String currentFeatureText = "";
+
+  /**
+   * Description of the currentScenario {@link #currentScenarioName}.
+   */
   private String currentScenarioName = "";
   /** Path to the videoOutputFile for referencing in the annotationFile. */
-  private String videoOutputFile = "";
-  /** Videorecorder used for recording the screencast.*/
+  private File videoOutputFile = null;
+  /** Videorecorder used for recording the screencast. */
   private VideoRecorder videoRecorder;
-  /** Capturing Area for the Screencast.  */
+  /** Capturing Area for the Screencast. */
   private int videoHeight;
-  /** Capturing Area for the Screencast.  */
+  /** Capturing Area for the Screencast. */
   private int videoWidth;
-  /** Directory where to store the video and annotation outputFile.*/
+  /** Directory where to store the video and annotation outputFile. */
   private File outputDirectory;
 
   /**
@@ -57,36 +69,52 @@ public class AnnotationService {
    */
   public AnnotationService() {
   }
-  
-  /**Initalizes a new annotation-Service.
-   * @param path                {@link #outputDirectory}
-   * @param capturingWidth      {@link #videoWidth}
-   * @param capturingHeight     {@link #videoHeight}
+
+  /**
+   * Initalizes a new annotation-Service.
+   * 
+   * @param path
+   *          {@link #outputDirectory}
+   * @param capturingWidth
+   *          {@link #videoWidth}
+   * @param capturingHeight
+   *          {@link #videoHeight}
    */
-  public AnnotationService( String path,  String capturingWidth, String capturingHeight) {
-    
+  public AnnotationService(String path, String capturingWidth,
+      String capturingHeight) {
+
     if (capturingWidth.equalsIgnoreCase("full")) {
       videoWidth = (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth();
     } else {
       videoWidth = Integer.parseInt(capturingWidth);
-      if ( videoWidth < 0
-          || videoWidth > (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth()) {
-        throw new IllegalArgumentException("Video width has illegal dimension: " + videoWidth);
+      if (videoWidth < 0
+          || videoWidth > (int) Toolkit.getDefaultToolkit().getScreenSize()
+              .getWidth()) {
+        throw new IllegalArgumentException(
+            "Video width has illegal dimension: " + videoWidth);
       }
     }
 
     if (capturingHeight.equalsIgnoreCase("full")) {
-      videoHeight = (int) Toolkit.getDefaultToolkit().getScreenSize().getHeight();
+      videoHeight = (int) Toolkit.getDefaultToolkit().getScreenSize()
+          .getHeight();
     } else {
       videoHeight = Integer.parseInt(capturingHeight);
-      if ( videoHeight < 0 
-          || videoHeight > (int) Toolkit.getDefaultToolkit().getScreenSize().getWidth()) {
-        throw new IllegalArgumentException("Video height has illegal dimension: " + videoHeight);  
+      if (videoHeight < 0
+          || videoHeight > (int) Toolkit.getDefaultToolkit().getScreenSize()
+              .getWidth()) {
+        throw new IllegalArgumentException(
+            "Video height has illegal dimension: " + videoHeight);
       }
     }
 
     changeOutputDirectory(path);
 
+  }
+
+  @WebMethod(operationName = "setFeatureText")
+  public void setFeatureText(@WebParam(name = "featureText") String featureText) {
+    this.currentFeatureText = featureText;
   }
 
   /**
@@ -100,9 +128,7 @@ public class AnnotationService {
    */
 
   @WebMethod(operationName = "startScenario")
-  public void startScenario(
-                        @WebParam(name = "scenarioName")
-                         String scenarioName) {
+  public void startScenario(@WebParam(name = "scenarioName") String scenarioName) {
 
     this.currentScenarioName = scenarioName;
     if (stepAnnotations == null) {
@@ -117,7 +143,6 @@ public class AnnotationService {
    * Stops the current Scenario and writes the appropriate output files.
    */
 
-
   public void stopScenario() {
     this.stopVideoRecording();
 
@@ -125,7 +150,7 @@ public class AnnotationService {
         && i < this.stepAnnotations.size(); i++) {
       this.stepAnnotations.get(i).setMillisecondsFrom(currentEndTimestamp);
     }
-    
+
     this.writeAnnotationFile();
   }
 
@@ -137,58 +162,47 @@ public class AnnotationService {
     if (stepAnnotations == null) {
       return;
     }
-    
-    String prefix = "annotations";
-    if (this.currentScenarioName != "") {
-      // Trim to valid fileName
-      prefix = this.currentScenarioName;
-      prefix = prefix.replaceAll("[^a-zA-Z0-9.-]", "_");
-      prefix = prefix.replaceAll("\\s", "_");
+
+    ScenarioAnnotationsDto exportable = new ScenarioAnnotationsDto();
+    exportable.setFeatureText(currentFeatureText);
+    exportable.setScenarioText(currentScenarioName);
+
+    for (StepAnnotation stepAnnotation : stepAnnotations) {
+      exportable.addStepAnnotation(stepAnnotation);
     }
 
-    File outputFile = Helper.createNewOutputFile(outputDirectory,
-        prefix, "eaf");
+    exportable.setNameVideoFile(videoOutputFile.getName());
 
     try {
-      AnnotationExporter exporter = new EafAnnotationExport(outputFile,
-          new String[] { "Steps" });
-      for (int i = 0; 
-          stepAnnotations != null && i < stepAnnotations.size(); i++) {
-        exporter.addStepAnnotation(stepAnnotations.get(i));
-      }
-      
-      if (videoOutputFile != "") {
-        String checksum = Helper.calcSha1Checksum(videoOutputFile);
-        exporter.setVideoReferenceFile(videoOutputFile, checksum);
-      } else {
-        exporter.setVideoReferenceFile(" ", " ");
-      }
-      exporter.writeOutputFile();
-      
-    } catch ( Exception e ) {
-      throw new WebServiceException( "Could not write Annotation-Outputfile: " + e.getMessage());
-      
+      exportable.setSha1ChecksumVideo(Helper.calcSha1Checksum(videoOutputFile));
+      annotationExporter.write(exportable);
+    } catch (Exception e) {
+      throw new WebServiceException("Could not write Annotation-Outputfile: "
+          + e.getMessage());
     } finally {
       stepAnnotations = null;
     }
+
+    // finalize DTO object and export it
 
   }
 
   /**
    * Can be used to change the outputDirectory for the annotation files/video
    * files at runtime.
+   * 
    * @param path
    *          The new target outputDirectory
    */
 
   @WebMethod(operationName = "changeOutputDirectory")
-  public void changeOutputDirectory(
-      @WebParam(name = "path")  String path) {
-  
+  public void changeOutputDirectory(@WebParam(name = "path") String path) {
+
     File changedOutputDirectory = new File(path);
 
     if (changedOutputDirectory.isFile()) {
-      throw new IllegalArgumentException(changedOutputDirectory.toString() + " is a file!");
+      throw new IllegalArgumentException(changedOutputDirectory.toString()
+          + " is a file!");
     }
 
     if (!changedOutputDirectory.exists()) {
@@ -199,7 +213,7 @@ public class AnnotationService {
     }
 
     this.outputDirectory = changedOutputDirectory;
-
+    this.annotationExporter = new EafAnnotationExporter(outputDirectory);
   }
 
   /**
@@ -210,22 +224,22 @@ public class AnnotationService {
     if (videoRecorder != null) {
       return;
     }
-    
+
     String prefix = "screencast";
     if (this.currentScenarioName != "") {
       prefix = this.currentScenarioName;
     }
 
-    File outputfile = Helper.createNewOutputFile(outputDirectory,
-        prefix, "avi");
+    File outputfile = Helper
+        .createNewOutputFile(outputDirectory, prefix, "avi");
     Dimension dim = new Dimension(videoWidth, videoHeight);
     try {
       videoRecorder = new MonteVideoRecorderAdapter(outputfile, dim);
       videoRecorder.startVideoRecording();
     } catch (Exception e) {
-      throw new WebServiceException("Could not start videorecording: " + e.getMessage());
+      throw new WebServiceException("Could not start videorecording: "
+          + e.getMessage());
     }
-
 
   }
 
@@ -233,14 +247,15 @@ public class AnnotationService {
    * Stops a screencast.
    */
   private void stopVideoRecording() {
-    if (videoRecorder == null) { 
-      return; 
+    if (videoRecorder == null) {
+      return;
     }
     try {
       videoRecorder.stopVideoRecording();
-      videoOutputFile = videoRecorder.getPathToOutputFile();
+      videoOutputFile = videoRecorder.getOutputFile();
     } catch (Exception e) {
-      throw new WebServiceException("Could not stop videorecording: " + e.getMessage());
+      throw new WebServiceException("Could not stop videorecording: "
+          + e.getMessage());
     } finally {
       videoRecorder = null;
     }
@@ -249,6 +264,7 @@ public class AnnotationService {
   /**
    * Adds a steptext to a buffer. For each step a result will be sent later. See
    * also {@link #addResultToBufferStep(StepResult)}.
+   * 
    * @param steptext
    *          The gherkin text for the step
    * @param datatable
@@ -256,18 +272,17 @@ public class AnnotationService {
    */
 
   @WebMethod(operationName = "addStepToBuffer")
-  public void addStepToBuffer(
-      @WebParam(name = "steptext")  String steptext,
-      @WebParam(name = "datatable")  String[][] datatable) {
+  public void addStepToBuffer(@WebParam(name = "steptext") String steptext,
+      @WebParam(name = "datatable") String[][] datatable) {
     if (stepAnnotations == null) {
       // Scenario not started => return => no adding necessary
       return;
     }
-    
+
     StepAnnotation stepAnnot = new StepAnnotation();
     stepAnnot.setSteptext(steptext);
     stepAnnot.setDataTables(datatable);
-    
+
     /*
      * If JVM terminates unexpected, result "Error" will be written by the
      * shutdown hook of the adapter
@@ -291,13 +306,12 @@ public class AnnotationService {
    *          the result of the step
    */
   @WebMethod(operationName = "addResultToBufferStep")
-  public void addResultToBufferStep(
-      @WebParam(name = "result")  StepResult result) {
+  public void addResultToBufferStep(@WebParam(name = "result") StepResult result) {
 
     if (stepAnnotations == null || stepAnnotations.get(resultPos) == null) {
       return;
     }
-    
+
     Long endTimestamp = System.currentTimeMillis();
     StepAnnotation annotation = stepAnnotations.get(resultPos);
     annotation.setMillisecondsFrom(currentEndTimestamp
@@ -325,10 +339,9 @@ public class AnnotationService {
    */
 
   @WebMethod(operationName = "addStepWithResult")
-  public void addStepWithResult(
-      @WebParam(name = "steptext")  String steptext,
-      @WebParam(name = "datatable")  String[][] datatable,
-      @WebParam(name = "result")  StepResult result) {
+  public void addStepWithResult(@WebParam(name = "steptext") String steptext,
+      @WebParam(name = "datatable") String[][] datatable,
+      @WebParam(name = "result") StepResult result) {
 
     if (stepAnnotations == null) {
       return;
@@ -343,7 +356,8 @@ public class AnnotationService {
   }
 
   /**
-   * Starts the server process with the given arguments. 
+   * Starts the server process with the given arguments.
+   * 
    * @param config
    *          Configuration-Array that need the following parameters: 0
    *          Publishing address for the SOAP-service 1 Output-Directory where
@@ -352,14 +366,15 @@ public class AnnotationService {
    *          capturing area is invalid, no video recording will be started.
    */
 
-  public static void main( String[] config) {
+  public static void main(String[] config) {
     if (config.length < 4) {
       throw new IllegalArgumentException(
-        "Misconfiguration, parameters to set: "
-        + "<publish_adress> <outputDirectory>, <video_width>, <video_height>");
+          "Misconfiguration, parameters to set: "
+              + "<publish_adress> <outputDirectory>, <video_width>, <video_height>");
     }
-      
-    final AnnotationService service = new AnnotationService(config[1], config[2], config[3]);
+
+    final AnnotationService service = new AnnotationService(config[1],
+        config[2], config[3]);
     final Endpoint endpoint = Endpoint.publish(config[0], service);
 
     Runtime.getRuntime().addShutdownHook(new Thread() {

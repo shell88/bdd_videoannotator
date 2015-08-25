@@ -111,8 +111,8 @@ public class MonteVideoRecorderAdapter extends ScreenRecorder implements
   }
 
   @Override
-  public String getPathToOutputFile() {
-    return super.getCreatedMovieFiles().get(0).getPath();
+  public File getOutputFile() {
+    return super.getCreatedMovieFiles().get(0);
   }
 
 }

@@ -20,7 +20,7 @@ public class StepDef {
   @Before
   public void openWebDriver() {
     webdriver = new FirefoxDriver();
-    webdriver.manage().timeouts().implicitlyWait(5, TimeUnit.SECONDS);
+    webdriver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
     webdriver.manage().window().maximize();
   }
 

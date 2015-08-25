@@ -8,18 +8,19 @@ import static stepdef.helper.AssertExtensions.assertActualResultStepEquals;
 import static stepdef.helper.AssertExtensions.assertDurationEquals;
 
 import stepdef.helper.TestUtils;
-import stepdef.helper.annotationfileparser.AnnotationFileParserFactory;
-import stepdef.helper.annotationfileparser.ExpectedResultStep;
-import stepdef.helper.annotationfileparser.ResultStep;
 
-import com.github.shell88.bddvideoannotator.annotationexport.StepResult;
+import com.github.shell88.bddvideoannotator.annotationfile.exporter.StepAnnotation;
+import com.github.shell88.bddvideoannotator.annotationfile.exporter.StepResult;
+
+import com.github.shell88.bddvideoannotator.annotationfile.parser.AnnotationFileParserFactory;
+import com.github.shell88.bddvideoannotator.annotationfile.parser.ExpectedResultStep;
 import com.github.shell88.bddvideoannotator.service.AnnotationService;
 import com.xuggle.xuggler.IContainer;
 
 import cucumber.api.DataTable;
+
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import gherkin.formatter.model.DataTableRow;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -41,9 +42,8 @@ public class WorkflowStepDef {
    */
   public WorkflowStepDef() throws Throwable {
     outputDirectory = TestUtils.getNewSubTestDirectory();
-    System.out.println("--OutputDirectory: " + outputDirectory.getName());
     serverInstance = new AnnotationService(outputDirectory.getAbsolutePath(),
-        "100", "100");
+        "full", "full");
   }
 
   @When("^I start a Scenario with description text \"(.*?)\"$")
@@ -56,7 +56,7 @@ public class WorkflowStepDef {
   public void i_add_a_Step(String steptext) throws Throwable {
     serverInstance.addStepToBuffer(steptext, new String[0][0]);
     ExpectedResultStep cur = new ExpectedResultStep();
-    cur.setStepText(steptext);
+    cur.setSteptext(steptext);
     stepsExpected.add(cur);
 
   }
@@ -66,19 +66,11 @@ public class WorkflowStepDef {
       String stepText, String stepResult, DataTable sampleData)
       throws Throwable {
     ExpectedResultStep exp = new ExpectedResultStep();
-    exp.setStepText(stepText);
+    exp.setSteptext(stepText);
     exp.setStepResult(StepResult.valueOf(stepResult));
-
-    String[][] tableToSend = new String[sampleData.getGherkinRows().size()][];
-    int indexRow = 0;
-    for (DataTableRow tableRow : sampleData.getGherkinRows()) {
-      exp.addSetUpDataRow(tableRow.getCells());
-      tableToSend[indexRow] = tableRow.getCells().toArray(new String[] {});
-      indexRow++;
-    }
-
+    exp.setExpectedDataTable(sampleData); 
     stepsExpected.add(exp);
-    serverInstance.addStepWithResult(stepText, tableToSend,
+    serverInstance.addStepWithResult(stepText, exp.getDataTable(),
         StepResult.valueOf(stepResult));
   }
 
@@ -89,7 +81,7 @@ public class WorkflowStepDef {
     serverInstance
         .addStepWithResult(steptext, null, StepResult.valueOf(result));
     ExpectedResultStep exp = new ExpectedResultStep();
-    exp.setStepText(steptext);
+    exp.setSteptext(steptext);
     exp.setStepResult(StepResult.valueOf(result));
     exp.setExpectedDurationSeconds(secondsWaiting);
     stepsExpected.add(exp);
@@ -131,10 +123,10 @@ public class WorkflowStepDef {
   @Then("^the annotation file should contain steptext \"(.*?)\" with result \"(.*?)\"$")
   public void the_annotation_file_should_contain_steptext_with_result(
       String stepTextExpected, String resultExpected) throws Throwable {
-    List<ResultStep> stepsAnnotationFile = AnnotationFileParserFactory
-        .getFileParser(annotationOutputFile).parseSortedSteps();
-    for (ResultStep stepInFile : stepsAnnotationFile) {
-      if (stepInFile.getStepText().equalsIgnoreCase(stepTextExpected)
+    List<StepAnnotation> stepsAnnotationFile = AnnotationFileParserFactory
+        .getFileParser(annotationOutputFile).parse().getStepAnnotations();
+    for (StepAnnotation stepInFile : stepsAnnotationFile) {
+      if (stepInFile.getSteptext().equalsIgnoreCase(stepTextExpected)
           && stepInFile.getStepResult().toString()
               .equalsIgnoreCase(resultExpected)) {
         return;
@@ -150,8 +142,8 @@ public class WorkflowStepDef {
   public void i_should_get_an_annotation_file_named_containing_the_added_steps(
       String prefixFileName) throws Throwable {
     this.i_should_get_an_annotation_file_named(prefixFileName);
-    List<ResultStep> stepsAnnotationFile = AnnotationFileParserFactory
-        .getFileParser(annotationOutputFile).parseSortedSteps();
+    List<StepAnnotation> stepsAnnotationFile = AnnotationFileParserFactory
+        .getFileParser(annotationOutputFile).parse().getStepAnnotations();
     assertEquals(stepsExpected.size(), stepsAnnotationFile.size());
 
     for (int i = 0; i < stepsExpected.size(); i++) {
@@ -160,6 +152,13 @@ public class WorkflowStepDef {
     }
   }
  
+  @Then("^the annotation file should contain the scenarioName \"(.*?)\"$")
+  public void the_annotation_file_should_contain_the_scenarioName(
+      String scenarioTextExpected) throws Throwable {
+    String actualScenarioText = AnnotationFileParserFactory.getFileParser(
+        annotationOutputFile).parse().getScenarioText();
+    assertEquals(scenarioTextExpected, actualScenarioText);
+  }
 
   @When("^I add a Result after (\\d+)$")
   public void i_add_a_Result_after(int secondsToWait) throws Throwable {
@@ -189,8 +188,8 @@ public class WorkflowStepDef {
   @Then("^step (\\d+) should be annotated with a duration of (\\d+)$")
   public void step_should_be_annotated_with_a_duration_of(int stepIndex,
       int expectedDurationSeconds) throws Throwable {
-    List<ResultStep> steps = AnnotationFileParserFactory.getFileParser(
-        this.annotationOutputFile).parseSortedSteps();
+    List<StepAnnotation> steps = AnnotationFileParserFactory.getFileParser(
+        this.annotationOutputFile).parse().getStepAnnotations();
     assertTrue("Step Index: " + stepIndex + " not found in List, size is: "
         + steps.size(), stepIndex <= steps.size()
 
@@ -202,8 +201,8 @@ public class WorkflowStepDef {
   @Then("^there must be no temporal intersection between the time slots of the steps$")
   public void there_must_be_no_temporal_intersection_between_the_time_slots_of_the_steps()
       throws Throwable {
-    List<ResultStep> steps = AnnotationFileParserFactory.getFileParser(
-        annotationOutputFile).parseSortedSteps();
+    List<StepAnnotation> steps = AnnotationFileParserFactory.getFileParser(
+        annotationOutputFile).parse().getStepAnnotations();
     if (steps.size() <= 1) {
       return;
     }
@@ -224,7 +223,7 @@ public class WorkflowStepDef {
   public void the_video_should_references_the_annotation_file()
       throws Throwable {
     String videorefFile = AnnotationFileParserFactory.getFileParser(
-        annotationOutputFile).parseVideoReferenceFile();
+        annotationOutputFile).parse().getNameVideoFile();
     assertTrue("Video is not referenced in Annotation file properly",
         videorefFile.contains(this.videoOutputFile.getName()));
   }
@@ -233,7 +232,7 @@ public class WorkflowStepDef {
   public void the_annotationfile_should_contain_the_correct_SHA_checksum_of_the_videofile()
       throws Throwable {
     String checkSumFromFile = AnnotationFileParserFactory.getFileParser(
-        annotationOutputFile).parseSha1Checksum();
+        annotationOutputFile).parse().getSha1ChecksumVideo();
     assertTrue("Checksum length of " + annotationOutputFile.getName() + "<= 5",
         checkSumFromFile.length() > 5);
   }

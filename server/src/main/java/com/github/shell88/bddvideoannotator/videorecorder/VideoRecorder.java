@@ -1,5 +1,7 @@
 package com.github.shell88.bddvideoannotator.videorecorder;
 
+import java.io.File;
+
 /**
  * AdapterInterface so that different videorecorder could be used by 
  * {@link com.github.shell88.bddvideoannotator.service.AnnotationService}.
@@ -32,7 +34,7 @@ public interface VideoRecorder {
   long getStartTimestamp();
 
   /**
-   * @return - Filepath where the video is stored.
+   * @return - File where the video is stored.
    */
-  String getPathToOutputFile();
+  File getOutputFile();
 }

@@ -108,7 +108,7 @@
 				<executions>
 					<execution>
 						<id>generate-java-stubs</id>
-						<phase>process-classes</phase>
+						<phase>process-sources</phase>
 						<goals>
 							<goal>wsimport</goal>
 						</goals>

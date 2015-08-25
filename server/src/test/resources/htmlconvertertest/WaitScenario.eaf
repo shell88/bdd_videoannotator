@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ANNOTATION_DOCUMENT DATE="2015-08-14T13:32:03.197+02:00" AUTHOR="BDDVideoAnnotator" VERSION="2.7">
+    <HEADER TIME_UNITS="milliseconds">
+        <MEDIA_DESCRIPTOR MEDIA_URL="WaitScenario.avi" MIME_TYPE="video"/>
+        <PROPERTY NAME="Feature">This is a feature</PROPERTY>
+        <PROPERTY NAME="Scenario">WaitScenario</PROPERTY>
+        <PROPERTY NAME="SHA1">dee8b6ab6acf1f81df99c94ec9889e308db67cc2</PROPERTY>
+    </HEADER>
+    <TIME_ORDER>
+        <TIME_SLOT TIME_SLOT_ID="ts1" TIME_VALUE="0"/>
+        <TIME_SLOT TIME_SLOT_ID="ts2" TIME_VALUE="1283"/>
+        <TIME_SLOT TIME_SLOT_ID="ts3" TIME_VALUE="1283"/>
+        <TIME_SLOT TIME_SLOT_ID="ts4" TIME_VALUE="3283"/>
+    </TIME_ORDER>
+    <TIER TIER_ID="Steps" LINGUISTIC_TYPE_REF="text">
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION TIME_SLOT_REF1="ts1" TIME_SLOT_REF2="ts2" ANNOTATION_ID="a01">
+                <ANNOTATION_VALUE>waitStep1 SUCCESS</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+        <ANNOTATION>
+            <ALIGNABLE_ANNOTATION TIME_SLOT_REF1="ts3" TIME_SLOT_REF2="ts4" ANNOTATION_ID="a11">
+                <ANNOTATION_VALUE>waitStep2 SUCCESS</ANNOTATION_VALUE>
+            </ALIGNABLE_ANNOTATION>
+        </ANNOTATION>
+    </TIER>
+    <LINGUISTIC_TYPE LINGUISTIC_TYPE_ID="text" TIME_ALIGNABLE="true" GRAPHIC_REFERENCES="false"/>
+    <CONSTRAINT STEREOTYPE="Time_Subdivision" DESCRIPTION="Time subdivision of parent annotation's time interval"/>
+    <CONSTRAINT STEREOTYPE="Symbolic_Subdivision" DESCRIPTION="Symbolic subdivision of a parent annotation"/>
+    <CONSTRAINT STEREOTYPE="Symbolic_Association" DESCRIPTION="1-1 association with a parent annotation"/>
+    <CONSTRAINT STEREOTYPE="Included_In" DESCRIPTION="Time alignable annotations within the parent annotation's time interval"/>
+</ANNOTATION_DOCUMENT>

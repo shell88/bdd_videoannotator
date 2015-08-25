@@ -20,7 +20,7 @@ Feature: In order to support Cucumber-JVM, an easy to use adapter should be prov
     Given i have an instance of the BDD-Adapter for Cucumber-JVM with a mocked server connection
     And I have a feature file:
       """
-      Feature: test
+      Feature: testfeature
       Background:
       Given I have a background step
       And I have also a second background step
@@ -29,7 +29,9 @@ Feature: In order to support Cucumber-JVM, an easy to use adapter should be prov
       Given I have a TestScenario
       """
     When I run Cucumber-JVM
-    Then the Adapter should send following steps for the scenario "Test":
+    Then the Adapter should report the feature "testfeature" 
+    And the Adapter should report the scenario "Test"
+    And the Adapter should report following steps:
       """
       Given I have a background step
       And I have also a second background step
@@ -41,7 +43,7 @@ Feature: In order to support Cucumber-JVM, an easy to use adapter should be prov
     Given i have an instance of the BDD-Adapter for Cucumber-JVM with a mocked server connection
     And I have a feature file:
       """
-      Feature: test
+      Feature: testfeature
       
       Background: testbackground
       Given I have a backgroundstep
@@ -55,7 +57,9 @@ Feature: In order to support Cucumber-JVM, an easy to use adapter should be prov
       |"Test2-1" | "Test2-2"|
       """
     When I run Cucumber-JVM
-    Then the Adapter should send following steps for the scenario "Test":
+    Then the Adapter should report the feature "testfeature"
+    And the Adapter should report the scenario "Test"
+    And the Adapter should report following steps:
       """
       Given I have a backgroundstep
       And a second backgroundstep
@@ -69,7 +73,7 @@ Feature: In order to support Cucumber-JVM, an easy to use adapter should be prov
    Given i have an instance of the BDD-Adapter for Cucumber-JVM with a mocked server connection
    And I have a feature file:
       """
-      Feature: test
+      Feature: testfeature
       
       Scenario Outline: AnExampleScenario
       Given I have a step with <value1> and <value2>
@@ -83,12 +87,15 @@ Feature: In order to support Cucumber-JVM, an easy to use adapter should be prov
       And there is also a second step
       """
    When I run Cucumber-JVM
-   Then the Adapter should send following steps for the scenario "AnExampleScenario":
+   Then the Adapter should report the feature "testfeature"
+   And the Adapter should report the scenario "AnExampleScenario"
+   And the Adapter should report following steps:
       """
       Given I have a step with "Test1-1" and "Test1-2"
       Given I have a step with "Test2-1" and "Test2-2"
       """    
-   And the Adapter should send following steps for the scenario "AnotherScenario":
+   And the Adapter should report the scenario "AnotherScenario"
+   And the Adapter should report following steps:
      """
      Given I have a scenario with a step
      And there is also a second step
@@ -109,6 +116,7 @@ Feature: In order to support Cucumber-JVM, an easy to use adapter should be prov
       |1            |"String"   |
       """
     When I run Cucumber-JVM
+    Then the Adapter should report the feature "test"
     Then the Adapter should report the scenario "Test with datatable"
     And the Adapter should send the steptext: "Given I have a step with a datatable:" with the datatable at position 1
       """

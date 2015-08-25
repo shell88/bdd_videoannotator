@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html ng-app="bddvideoviewer">
+<head>
+<meta charset="utf-8" />
+<script src="angular.min.js"></script>
+<link href="bootstrap/css/bootstrap.css" rel="stylesheet" />
+<script>
+      var app = angular.module('bddvideoviewer', []);
+      app.controller('BddVideoViewerCtrl', function($scope) {
+          $scope.scenarios=[];
+          $scope.playVideoSegment = function(videoId, millisecondsFrom, durationMillis){
+	          var starttime = Math.round((millisecondsFrom / 1000) - 0.5);
+	          var endtime = Math.round((millisecondsFrom + durationMillis / 1000) + 0.5) ;
+	          var videoElement = document.getElementById(videoId);
+	          var videoSourceElement = videoElement.children[0];
+	          videoSourceElement.src = videoSourceElement.getAttribute("data-ng-src") + "#t=" + starttime + "," + endtime;
+	          videoElement.load();
+	          videoElement.play();
+            }
+      });
+</script>
+
+
+<title>BDDVideoannotator Report</title>
+<style>
+video {
+	width: 100%;
+}
+</style>
+</head>
+
+<body ng-controller="BddVideoViewerCtrl">
+	<div class="container" ng-repeat="scenario in scenarios" ng-init="videoid='video_' + $index">
+		 <div class="row">
+		    <h2>Feature: {{scenario.featuretext}}</h2>
+			<h3>Scenario: {{scenario.scenarioname}}</h2>
+			<div class="col-md-8">
+				<video id="{{videoid}}" height="400" width="400" controls>
+					<source ng-src="{{scenario.video}}" data-ng-src="{{scenario.video}}" type="video/mp4">
+				</video>
+			</div>
+			<div class="col-md-4">				
+			<table class="table table-striped table-bordered">
+			<colgroup>
+			 <col style="width: 300px" />
+			 <col />
+			 <col />
+			<tr>
+			<th>Steptext</th>
+			<th>Duration in milliseconds</th>
+			<th>Status</th>
+			</tr>
+			
+			<tr ng-repeat="step in scenario.steps">
+				<td>
+				<a style="cursor: pointer" ng-click="playVideoSegment(videoid, step.millisecondsFrom, step.durationMillis);">
+				{{step.steptext}}
+				</a>
+				</td>
+				<td align="right">{{step.durationMillis}}</td>
+				<td>
+				  <span ng-class="step.stepResult == 'SUCCESS' || step.stepResult == 'SKIPPED' ? 'glyphicon glyphicon-ok-sign text-success' : 'glyphicon glyphicon-remove-sign text-danger'"
+				  aria-hidden="true"></span>
+				</td>
+			</tr>  
+			</table>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

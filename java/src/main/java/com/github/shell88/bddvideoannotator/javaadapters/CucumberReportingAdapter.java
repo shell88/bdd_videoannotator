@@ -63,7 +63,7 @@ public class CucumberReportingAdapter implements Reporter, Formatter {
   }
 
   public void feature(Feature feature) {
-
+    client.setFeatureText(feature.getName());
   }
 
   public void scenarioOutline(ScenarioOutline scenarioOutline) {
@@ -207,7 +207,7 @@ public class CucumberReportingAdapter implements Reporter, Formatter {
   }
   
   /**
-   * @param  str DocString object from a step
+   * @param  str DocString object from a step.
    * @return Converted to a single string with appropriate markups
    */
   public String convertDocString(DocString str) {
