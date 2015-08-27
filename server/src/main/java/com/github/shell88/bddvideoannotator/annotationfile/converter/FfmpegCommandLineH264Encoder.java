@@ -26,8 +26,8 @@ public class FfmpegCommandLineH264Encoder implements Callable<Object> {
   public FfmpegCommandLineH264Encoder(File inputFile, File outputFile) {
     String pathInputFile = Paths.get(inputFile.toURI()).toString();
     String pathOutputFileName = outputFile.getAbsolutePath();
-    processBuilder = new ProcessBuilder("ffmpeg", "-y", "-i", pathInputFile,
-        "-vcodec", "libx264", pathOutputFileName);
+    processBuilder = new ProcessBuilder("ffmpeg", "-i", pathInputFile,
+        "-vcodec", "libx264", "-pix_fmt", "yuv420p",  pathOutputFileName);
   }
 
   public String getCommand() {
