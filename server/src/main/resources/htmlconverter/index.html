@@ -13,7 +13,8 @@
 	          var endtime = Math.round((millisecondsFrom + durationMillis / 1000) + 0.5) ;
 	          var videoElement = document.getElementById(videoId);
 	          var videoSourceElement = videoElement.children[0];
-	          videoSourceElement.src = videoSourceElement.getAttribute("data-ng-src") + "#t=" + starttime + "," + endtime;
+	          var splitted = videoSourceElement.getAttribute("src").split("#");
+              videoSourceElement.src = splitted[0] + "#t=" + starttime + "," + endtime;
 	          videoElement.load();
 	          videoElement.play();
             }
@@ -36,7 +37,7 @@ video {
 			<h3>Scenario: {{scenario.scenarioname}}</h2>
 			<div class="col-md-8">
 				<video id="{{videoid}}" height="400" width="400" controls>
-					<source ng-src="{{scenario.video}}" data-ng-src="{{scenario.video}}" type="video/mp4">
+					<source ng-src="{{scenario.video}}" type="video/mp4">
 				</video>
 			</div>
 			<div class="col-md-4">				
