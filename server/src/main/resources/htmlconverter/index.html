@@ -9,8 +9,8 @@
       app.controller('BddVideoViewerCtrl', function($scope) {
           $scope.scenarios=[];
           $scope.playVideoSegment = function(videoId, millisecondsFrom, durationMillis){
-	          var starttime = Math.round((millisecondsFrom / 1000) - 0.5);
-	          var endtime = Math.round((millisecondsFrom + durationMillis / 1000) + 0.5) ;
+	          var starttime = millisecondsFrom / 1000;
+	          var endtime = (millisecondsFrom + durationMillis) / 1000 ;
 	          var videoElement = document.getElementById(videoId);
 	          var videoSourceElement = videoElement.children[0];
 	          var splitted = videoSourceElement.getAttribute("src").split("#");
