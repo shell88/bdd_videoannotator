@@ -4,7 +4,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.contains;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.refEq;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.inOrder;
@@ -15,7 +17,6 @@ import static org.mockito.Mockito.when;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
 import stepdef.helper.IsSameStringArrayArray;
@@ -33,7 +34,6 @@ import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-
 import gherkin.formatter.model.DataTableRow;
 
 import java.io.File;
@@ -47,7 +47,6 @@ public class ReportingTest {
   private File subTestDirectory;
   
   private int scenariosToStop = 0;
-  //TODO: use only orderedVerifier
   private InOrder orderedVerifier;
 
   @Given("^i have an instance of the BDD-Adapter for Cucumber-JVM with a mocked server connection$")
@@ -104,10 +103,11 @@ public class ReportingTest {
   }
 
   @Then("^the Adapter should report the step \"(.*?)\" with the docstring \"(.*?)\"$")
-  public void the_Adapter_should_report_the_step_with_the_docstring(
-      String steptext, String docstring) throws Throwable {
+  public void the_Adapter_should_report_the_step_with_the_docstring(String steptext,
+      String docstring) throws Throwable {
     String verificationText = steptext + " \"\"\"" + docstring + "\"\"\"";
-    verify(mockedClient).addStepToBuffer(eq(verificationText), any(StringArrayArray.class));
+    orderedVerifier.verify(mockedClient).addStepToBuffer(eq(verificationText),
+        any(StringArrayArray.class));
   }
 
   @When("^I run Cucumber-JVM$")
@@ -128,10 +128,8 @@ public class ReportingTest {
 
   @Then("^the Adapter should report following steps:$")
   public void the_Adapter_should_report_following_steps(String stepListExpected) throws Throwable {
-     
     // Write code here that turns the phrase above into concrete actions
-    expectedSteps = stepListExpected.split("\n");
-    
+    expectedSteps = stepListExpected.split("\n");    
     for (int i = 0; i < expectedSteps.length; i++) {
       expectedSteps[i] = expectedSteps[i].trim();
       orderedVerifier.verify(mockedClient).addStepToBuffer(eq(expectedSteps[i]),
@@ -157,7 +155,7 @@ public class ReportingTest {
 
     StringArrayArray expectedDataArray = convertDataTable2StringArrayArray(expectedDataTable);
 
-    verify(mockedClient, atLeastOnce()).addStepToBuffer(eq(expectedStepText),
+    orderedVerifier.verify(mockedClient, atLeastOnce()).addStepToBuffer(eq(expectedStepText),
         argThat(new IsSameStringArrayArray(expectedDataArray)));
   }
 
@@ -177,25 +175,22 @@ public class ReportingTest {
   @Then("^the Adapter should send \"(.*?)\" for all steps to the server$")
   public void the_Adapter_should_send_for_all_steps_to_the_server(
       String expectedResult) throws Throwable {
-    ArgumentCaptor<StepResult> resultsCaptured = ArgumentCaptor
-        .forClass(StepResult.class);
+
     verify(mockedClient, times(expectedSteps.length)).addResultToBufferStep(
-        resultsCaptured.capture());
-    for (StepResult stepReported : resultsCaptured.getAllValues()) {
-      assertEquals(StepResult.valueOf(expectedResult), stepReported);
-    }
+        refEq(StepResult.valueOf(expectedResult)));
+    
   }
 
   @Then("^the Adapter should send the step \"(.*?)\" with Result \"(.*?)\"$")
   public void the_Adapter_should_send_the_step_with_Result(String steptext,
       String result) throws Throwable {
-    ArgumentCaptor<StepResult> captureResult = ArgumentCaptor
-        .forClass(StepResult.class);
-    ArgumentCaptor<String> captureStepText = ArgumentCaptor
-        .forClass(String.class);
-    verify(mockedClient, atLeastOnce()).addStepWithResult(
-        captureStepText.capture(), any(StringArrayArray.class),
-        captureResult.capture());
+    //Contains steptext, as CucumberJVM will also Add name of the StepdefinitionClass
+    // to the Steptext
+    orderedVerifier.verify(mockedClient, atLeastOnce()).addStepWithResult(
+        contains(steptext),
+        any(StringArrayArray.class), 
+        refEq(StepResult.valueOf(result)));
+    
   }
 
 }
