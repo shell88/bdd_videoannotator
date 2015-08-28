@@ -3,6 +3,7 @@ package stepdefinitions;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.atLeastOnce;
@@ -17,6 +18,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
+import stepdef.helper.IsSameStringArrayArray;
 import stepdef.helper.TestUtils;
 import stepdef.subtest.CucumberSubTestThreadWithAdapterInstance;
 
@@ -27,12 +29,14 @@ import com.github.shell88.bddvideoannotator.stubjava.StepResult;
 import com.github.shell88.bddvideoannotator.stubjava.StringArray;
 import com.github.shell88.bddvideoannotator.stubjava.StringArrayArray;
 
+import cucumber.api.DataTable;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
+import gherkin.formatter.model.DataTableRow;
+
 import java.io.File;
-import java.util.Arrays;
 import java.util.List;
 
 public class ReportingTest {
@@ -132,11 +136,9 @@ public class ReportingTest {
       expectedSteps[i] = expectedSteps[i].trim();
       orderedVerifier.verify(mockedClient).addStepToBuffer(eq(expectedSteps[i]),
               any(StringArrayArray.class));
-    }
-    
+    } 
   }
   
-
   @Then("^the Adapter should report the scenario \"(.*?)\"$")
   public void the_Adapter_should_report_the_scenario(String scenarioName)
       throws Throwable {
@@ -148,40 +150,29 @@ public class ReportingTest {
     scenariosToStop++;
     verify(mockedClient, atLeast(scenariosToStop)).stopScenario();
   }
-  
-  //TODO: simplify so that no position is necessary in feature file
-  @Then("^the Adapter should send the steptext: \"(.*?)\" with the datatable at position (\\d+)$")
-  public void the_Adapter_should_send_the_steptext_with_the_datatable(
-      String steptext, int position, String datatable) throws Throwable {
 
-    position = position - 1;
-    ArgumentCaptor<String> capturedStep = ArgumentCaptor.forClass(String.class);
-    ArgumentCaptor<StringArrayArray> capturedDatatable = ArgumentCaptor
-        .forClass(StringArrayArray.class);
-    // Cannot verify concrete steptext AND using ArgumentCaptor
-    // Datatable cannot be verified directly because it is a complex data
-    // structure
-    verify(mockedClient, atLeastOnce()).addStepToBuffer(capturedStep.capture(),
-        capturedDatatable.capture());
+  @Then("^the Adapter should send the steptext \"([^\"]*)\" with the datatable:$")
+  public void the_Adapter_should_send_the_steptext_with_the_datatable(String expectedStepText,
+      DataTable expectedDataTable) throws Throwable {
 
-    assertEquals(steptext, capturedStep.getAllValues().get(position));
-      
-    String[] lines = datatable.split("\n");
-    List<StringArray> deliveredDatatable = capturedDatatable.getAllValues()
-        .get(position).getItem();
-    assertEquals(lines.length, deliveredDatatable.size());
+    StringArrayArray expectedDataArray = convertDataTable2StringArrayArray(expectedDataTable);
 
-    for (int i = 0; i < lines.length; i++) {
-      List<String> expected = Arrays.asList(lines[i].trim().split("\\|"));
-      List<String> rowEntriesCaptured = deliveredDatatable.get(i).getItem();
-      // First entry of expected will be empty because of the split
-      assertEquals(expected.size() - 1, rowEntriesCaptured.size());
-      for (int j = 1; j < expected.size(); j++) {
-        assertEquals(expected.get(j).trim(), rowEntriesCaptured.get(j - 1)
-            .trim());
-      }
-    }   
+    verify(mockedClient, atLeastOnce()).addStepToBuffer(eq(expectedStepText),
+        argThat(new IsSameStringArrayArray(expectedDataArray)));
   }
+
+  private StringArrayArray convertDataTable2StringArrayArray(DataTable table) {
+    StringArrayArray datatable = new StringArrayArray();
+
+    for (DataTableRow row : table.getGherkinRows()) {
+      StringArray rowElement = new StringArray();
+      rowElement.getItem().addAll(row.getCells());
+      datatable.getItem().add(rowElement);
+    }
+    
+    return datatable;
+  }
+  
 
   @Then("^the Adapter should send \"(.*?)\" for all steps to the server$")
   public void the_Adapter_should_send_for_all_steps_to_the_server(

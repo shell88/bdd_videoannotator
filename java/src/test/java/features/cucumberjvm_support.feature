@@ -118,17 +118,14 @@ Feature: In order to support Cucumber-JVM, an easy to use adapter should be prov
     When I run Cucumber-JVM
     Then the Adapter should report the feature "test"
     Then the Adapter should report the scenario "Test with datatable"
-    And the Adapter should send the steptext: "Given I have a step with a datatable:" with the datatable at position 1
-      """
+    And the Adapter should send the steptext "Given I have a step with a datatable:" with the datatable:
       |Col1         |Col2       |
       |"String1"    |32.4       |
       |"String2"    |12.2       |
-      """
-    And the Adapter should send the steptext: "And I have a second step with a datatable:" with the datatable at position 2
-      """
+    And the Adapter should send the steptext "And I have a second step with a datatable:" with the datatable:
       |Col3         |Col4       |
       |1            |"String"   |
-      """
+      
   Scenario: DocStrings
    Given i have an instance of the BDD-Adapter for Cucumber-JVM with a mocked server connection
    And I have a feature file with a step "Given I have a step" and a docstring "hello docstring"
