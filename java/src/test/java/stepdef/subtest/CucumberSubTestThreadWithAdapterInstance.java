@@ -1,18 +1,6 @@
 package stepdef.subtest;
 
-import static java.util.Arrays.asList;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-
-import cucumber.runtime.ClassFinder;
-import cucumber.runtime.Runtime;
-import cucumber.runtime.RuntimeOptions;
-import cucumber.runtime.formatter.PluginFactory;
-import cucumber.runtime.io.MultiLoader;
-import cucumber.runtime.io.ResourceLoader;
-import cucumber.runtime.io.ResourceLoaderClassFinder;
 
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -23,7 +11,6 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -39,8 +26,9 @@ import java.util.List;
  */
 
 public class CucumberSubTestThreadWithAdapterInstance extends Thread {
-  private final String pathOfReportingAdapterClass = com.github.shell88
-      .bddvideoannotator.javaadapters.CucumberReportingAdapter.class.getCanonicalName(); 
+  
+  private final String pathOfTestProxyClass =
+      stepdef.subtest.CucumberReportingAdapterTestProxy.class.getCanonicalName();
   private CucumberReportingAdapter mockedAdapter;
   private File dirContents;
   private ExceptionCollector exceptionCollector;
@@ -74,17 +62,16 @@ public class CucumberSubTestThreadWithAdapterInstance extends Thread {
     // For better orientation
     System.out.println("--STARTING SUBTEST IN "
         + this.dirContents.getAbsolutePath());
-
-    PluginFactory spyedCucumberPluginFactory = spy(PluginFactory.class);
-    doReturn(mockedAdapter).when(spyedCucumberPluginFactory).create(
-        pathOfReportingAdapterClass);
-
-    /*
-     * CLASS is not mockable by Mockito (final Class). As Cucumber-JVM will
-     * create a new Instance of the adapter using the create()-Method in Class
-     * Plugin-Factory, this method will be mocked. Unfortunately there is no way
-     * in cucumber.api.cli.Main to provide a Mocked Plugin-Factory directly
-     */
+    
+    CucumberReportingAdapterTestProxy.setUnderlyingInstance(mockedAdapter);
+    
+    String[] argsCucumber = new String[] {
+        dirContents.getAbsolutePath(), 
+        "--glue", dirContents.getName(),
+        "-p", pathOfTestProxyClass
+    };
+    
+    //Stepdefinition must be detectable by Cucumber-JVM
     URL[] urlstoLoad = ((URLClassLoader) (ClassLoader.getSystemClassLoader()))
         .getURLs();
 
@@ -95,29 +82,24 @@ public class CucumberSubTestThreadWithAdapterInstance extends Thread {
       this.getUncaughtExceptionHandler().uncaughtException(this, e1);
       return;
     }
-    //TODO: Use proxy class like in PHP project
     URLClassLoader classLoader = new URLClassLoader(urlstoLoad);
     this.setContextClassLoader(classLoader);
     
-    String[] cucumberArgs = new String[] { dirContents.getAbsolutePath(),
-        "--glue", dirContents.getName(), "-p", pathOfReportingAdapterClass };
     
-    RuntimeOptions runtimeOptions = new RuntimeOptions(
-        spyedCucumberPluginFactory, new ArrayList<String>(asList(cucumberArgs)));
-    ResourceLoader resourceLoader = new MultiLoader(classLoader);
-    ClassFinder classFinder = new ResourceLoaderClassFinder(resourceLoader,
-        classLoader);
-    Runtime runtime = new Runtime(resourceLoader, classFinder, classLoader,
-        runtimeOptions);
+    byte retValue = 1;
     try {
-      runtime.run();
+      //CucumberJVM will alway use Class Loader of current thread, and not that one
+      //specified in run Method (see https://github.com/cucumber/cucumber-jvm/issues/880)
+      retValue =  cucumber.api.cli.Main.run(argsCucumber,
+                  Thread.currentThread().getContextClassLoader());
     } catch (IOException e) {
       this.getUncaughtExceptionHandler().uncaughtException(this, e);
       return;
     }
-    assertTrue("Return Code of Cucumber-Thread != 0", runtime.exitStatus() == 0);
-    verify(spyedCucumberPluginFactory).create(pathOfReportingAdapterClass);
+
+    assertTrue("Return Code of Cucumber-Thread != 0", retValue == 0);
     System.out.println("---END OF SUBTEST");
+
   }
 
 }
