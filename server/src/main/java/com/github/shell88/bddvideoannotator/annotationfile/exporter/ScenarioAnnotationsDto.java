@@ -3,6 +3,10 @@ package com.github.shell88.bddvideoannotator.annotationfile.exporter;
 import java.util.ArrayList;
 import java.util.List;
 
+//TODO: Buffered Step Annotation handling => Method here in ScenarioAnnotationsDto
+//      would simplify server and test code, but it wont be a Data Transfer Object afterwards
+//      as behavior is added => rename
+
 public class ScenarioAnnotationsDto {
 
   private String featureText;
@@ -26,11 +30,12 @@ public class ScenarioAnnotationsDto {
   public StepAnnotation getStepAnnotation(int index) {
     return stepAnnotations.get(index);
   }
-
+      
+  
   public void addStepAnnotation(StepAnnotation stepAnnotation) {
     this.stepAnnotations.add(stepAnnotation);
   }
-
+  
   public String getSha1ChecksumVideo() {
     return sha1ChecksumVideo;
   }

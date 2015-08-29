@@ -2,14 +2,13 @@
 Feature: In order to have usable testlogs the server has to be reliable.
 
   Scenario Outline: Synchronization between text and video
-    Given I start a Scenario with description text "WaitScenario"
+    Given I start a Scenario "WaitScenario"
     When I add a Step "waitStep1",
     And I add a Step "waitStep2",
     When I add a Result after <waitsec1>
     And I add a Result after <waitsec2>
     And I stop the Scenario
-    Then I should get a video and an annotation file named "WaitScenario"
-    And the annotation file should contain the scenarioName "WaitScenario"
+    Then I should get a video and an annotation file named with the scenario name
     And the video should have a length of <totalsec>
     And step 1 should be annotated with a duration of <waitsec1>
     And step 2 should be annotated with a duration of <waitsec2>
