@@ -12,6 +12,7 @@ test_output/
 output_bddvideoannotator/
 vendor/
 bin/
+tmp/
 
 #others
 pom.xml.tag

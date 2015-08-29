@@ -12,7 +12,6 @@ import com.github.shell88.bddvideoannotator.videorecorder.VideoRecorder;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.io.File;
-import java.util.ArrayList;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -33,8 +32,8 @@ public class AnnotationService {
 
   private AnnotationExporter annotationExporter;
 
-  /** List of buffered step_annotations. */
-  private ArrayList<StepAnnotation> stepAnnotations;
+  private ScenarioAnnotationsDto currentScenario;
+ 
   /**
    * The systemTimestamp when the scenario was started using
    * {@link #startScenario(String)}.
@@ -47,12 +46,9 @@ public class AnnotationService {
    */
   private Long currentEndTimestamp;
 
-  private String currentFeatureText = "";
-
   /**
    * Description of the currentScenario {@link #currentScenarioName}.
    */
-  private String currentScenarioName = "";
   /** Path to the videoOutputFile for referencing in the annotationFile. */
   private File videoOutputFile = null;
   /** Videorecorder used for recording the screencast. */
@@ -114,7 +110,7 @@ public class AnnotationService {
 
   @WebMethod(operationName = "setFeatureText")
   public void setFeatureText(@WebParam(name = "featureText") String featureText) {
-    this.currentFeatureText = featureText;
+    currentScenario.setFeatureText(featureText);
   }
 
   /**
@@ -129,13 +125,13 @@ public class AnnotationService {
 
   @WebMethod(operationName = "startScenario")
   public void startScenario(@WebParam(name = "scenarioName") String scenarioName) {
-
-    this.currentScenarioName = scenarioName;
-    if (stepAnnotations == null) {
-      this.stepAnnotations = new ArrayList<StepAnnotation>();
-      resultPos = 0;
-      currentEndTimestamp = scenarioStartTimestamp = System.currentTimeMillis();
+    currentScenario = new ScenarioAnnotationsDto();
+   
+    if(!currentScenario.hasStepAnnotations()){
+       resultPos = 0;
+       currentEndTimestamp = scenarioStartTimestamp = System.currentTimeMillis();
     }
+    currentScenario.setScenarioText(scenarioName);
     startVideoRecording();
   }
 
@@ -145,10 +141,9 @@ public class AnnotationService {
 
   public void stopScenario() {
     this.stopVideoRecording();
-
-    for (int i = resultPos; stepAnnotations != null
-        && i < this.stepAnnotations.size(); i++) {
-      this.stepAnnotations.get(i).setMillisecondsFrom(currentEndTimestamp);
+        
+    for (int i = resultPos;  i < currentScenario.getNumberOfStepAnnotations(); i++) {
+      currentScenario.getStepAnnotation(resultPos).setMillisecondsFrom(currentEndTimestamp);
     }
 
     this.writeAnnotationFile();
@@ -159,31 +154,22 @@ public class AnnotationService {
    * video recording.
    */
   private void writeAnnotationFile() {
-    if (stepAnnotations == null) {
+    
+    if (!currentScenario.hasStepAnnotations()) {
       return;
     }
-
-    ScenarioAnnotationsDto exportable = new ScenarioAnnotationsDto();
-    exportable.setFeatureText(currentFeatureText);
-    exportable.setScenarioText(currentScenarioName);
-
-    for (StepAnnotation stepAnnotation : stepAnnotations) {
-      exportable.addStepAnnotation(stepAnnotation);
-    }
-
-    exportable.setNameVideoFile(videoOutputFile.getName());
+    currentScenario.setNameVideoFile(videoOutputFile.getName());
 
     try {
-      exportable.setSha1ChecksumVideo(Helper.calcSha1Checksum(videoOutputFile));
-      annotationExporter.write(exportable);
+      currentScenario.setSha1ChecksumVideo(Helper.calcSha1Checksum(videoOutputFile));
+      annotationExporter.write(currentScenario);
     } catch (Exception e) {
       throw new WebServiceException("Could not write Annotation-Outputfile: "
           + e.getMessage());
     } finally {
-      stepAnnotations = null;
+      currentScenario = null;
     }
 
-    // finalize DTO object and export it
 
   }
 
@@ -226,8 +212,8 @@ public class AnnotationService {
     }
 
     String prefix = "screencast";
-    if (this.currentScenarioName != "") {
-      prefix = this.currentScenarioName;
+    if (currentScenario.getScenarioText() != "") {
+      prefix = currentScenario.getScenarioText();
     }
 
     File outputfile = Helper
@@ -274,7 +260,8 @@ public class AnnotationService {
   @WebMethod(operationName = "addStepToBuffer")
   public void addStepToBuffer(@WebParam(name = "steptext") String steptext,
       @WebParam(name = "datatable") String[][] datatable) {
-    if (stepAnnotations == null) {
+   
+    if (currentScenario == null) {
       // Scenario not started => return => no adding necessary
       return;
     }
@@ -290,12 +277,12 @@ public class AnnotationService {
     stepAnnot.setStepResult(StepResult.ERROR);
     stepAnnot.setDurationMillis(0L);
     stepAnnot.setMillisecondsFrom(0L);
-    stepAnnotations.add(stepAnnot);
+    currentScenario.addStepAnnotation(stepAnnot);
 
   }
 
   /**
-   * Adds a result to a bufferd step text
+   * Adds a result to a buffered step text
    * {@link #addStepToBuffer(String, String[][])}. The Mapping will occur in
    * order of the incoming result. So the first result will be mapped to the
    * first step in the buffer, the second result to the second step and so on.
@@ -308,12 +295,12 @@ public class AnnotationService {
   @WebMethod(operationName = "addResultToBufferStep")
   public void addResultToBufferStep(@WebParam(name = "result") StepResult result) {
 
-    if (stepAnnotations == null || stepAnnotations.get(resultPos) == null) {
+    if (!currentScenario.hasStepAnnotations() || currentScenario.getStepAnnotation(resultPos) == null) {
       return;
     }
 
     Long endTimestamp = System.currentTimeMillis();
-    StepAnnotation annotation = stepAnnotations.get(resultPos);
+    StepAnnotation annotation = currentScenario.getStepAnnotation(resultPos);
     annotation.setMillisecondsFrom(currentEndTimestamp
         - this.scenarioStartTimestamp);
 
@@ -343,14 +330,14 @@ public class AnnotationService {
       @WebParam(name = "datatable") String[][] datatable,
       @WebParam(name = "result") StepResult result) {
 
-    if (stepAnnotations == null) {
+    if (currentScenario == null) {
       return;
     }
 
     StepAnnotation stepAnnot = new StepAnnotation();
     stepAnnot.setSteptext(steptext);
     stepAnnot.setDataTables(datatable);
-    stepAnnotations.add(stepAnnot);
+    currentScenario.addStepAnnotation(stepAnnot);
     addResultToBufferStep(result);
 
   }

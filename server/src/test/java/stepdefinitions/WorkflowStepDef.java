@@ -7,20 +7,20 @@ import static org.junit.Assert.fail;
 import static stepdef.helper.AssertExtensions.assertActualResultStepEquals;
 import static stepdef.helper.AssertExtensions.assertDurationEquals;
 
-import stepdef.helper.TestUtils;
-
+import com.github.shell88.bddvideoannotator.service.AnnotationService;
 import com.github.shell88.bddvideoannotator.annotationfile.exporter.StepAnnotation;
 import com.github.shell88.bddvideoannotator.annotationfile.exporter.StepResult;
-
 import com.github.shell88.bddvideoannotator.annotationfile.parser.AnnotationFileParserFactory;
 import com.github.shell88.bddvideoannotator.annotationfile.parser.ExpectedResultStep;
-import com.github.shell88.bddvideoannotator.service.AnnotationService;
+
 import com.xuggle.xuggler.IContainer;
 
 import cucumber.api.DataTable;
 
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+
+import stepdef.helper.TestUtils;
 
 import java.io.File;
 import java.util.ArrayList;

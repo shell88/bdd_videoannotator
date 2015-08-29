@@ -4,17 +4,29 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ScenarioAnnotationsDto {
- 
+
   private String featureText;
   private String scenarioText;
   private List<StepAnnotation> stepAnnotations = new ArrayList<StepAnnotation>();
   private String sha1ChecksumVideo;
   private String nameVideoFile;
-  
+
   public List<StepAnnotation> getStepAnnotations() {
     return stepAnnotations;
   }
-  
+
+  public int getNumberOfStepAnnotations() {
+    return stepAnnotations.size();
+  }
+
+  public boolean hasStepAnnotations() {
+    return getNumberOfStepAnnotations() > 0;
+  }
+
+  public StepAnnotation getStepAnnotation(int index) {
+    return stepAnnotations.get(index);
+  }
+
   public void addStepAnnotation(StepAnnotation stepAnnotation) {
     this.stepAnnotations.add(stepAnnotation);
   }
@@ -22,7 +34,7 @@ public class ScenarioAnnotationsDto {
   public String getSha1ChecksumVideo() {
     return sha1ChecksumVideo;
   }
-  
+
   public void setSha1ChecksumVideo(String sha1ChecksumVideo) {
     this.sha1ChecksumVideo = sha1ChecksumVideo;
   }
@@ -50,8 +62,5 @@ public class ScenarioAnnotationsDto {
   public void setNameVideoFile(String nameVideoFile) {
     this.nameVideoFile = nameVideoFile;
   }
-
- 
-  
 
 }
