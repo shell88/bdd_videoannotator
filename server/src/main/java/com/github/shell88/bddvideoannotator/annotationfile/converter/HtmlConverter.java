@@ -20,18 +20,21 @@ import java.util.concurrent.TimeUnit;
 /**
  * Converts AnnotationFiles to a HTMLReport using
  * {@link FfmpegCommandLineH264Encoder} and {@link HtmlAnnotationExporter}.
+ * 
  * @author Hell
- *
+ * 
  */
 
-public class HtmlConverter{
+public class HtmlConverter {
 
   private File scanDir;
   private File targetDir;
-  
+
   /**
-   * @param scanDir   - Directory to search for AnnoationFiles.
-   * @param targetDir - TargetDirectory where to store the HTMLReport.
+   * @param scanDir
+   *          - Directory to search for AnnoationFiles.
+   * @param targetDir
+   *          - TargetDirectory where to store the HTMLReport.
    */
   public HtmlConverter(File scanDir, File targetDir) {
     if (!scanDir.exists()) {
@@ -47,41 +50,42 @@ public class HtmlConverter{
       throw new IllegalArgumentException(targetDir.getAbsolutePath()
           + " not writable!");
     }
-    
+
     this.scanDir = scanDir;
     this.targetDir = targetDir;
-    
+
   }
-  
+
   /**
-   * Converts the annotationFiles from {@link #scanDir}
-   * to a HTML-Report.
-   * @throws Throwable  - IOErrors
+   * Converts the annotationFiles from {@link #scanDir} to a HTML-Report.
+   * 
+   * @throws Throwable
+   *           - IOErrors
    */
   public void convert() throws Throwable {
-   
+
     File[] annotationFiles = Helper.getAnnotationFilesInDirectory(scanDir);
-      
+
     BlockingQueue<Runnable> encodingQueue = new ArrayBlockingQueue<Runnable>(
         annotationFiles.length);
     ThreadPoolExecutor encodingThreadPool = new ThreadPoolExecutor(4, 4, 30,
         TimeUnit.SECONDS, encodingQueue);
-    
-    HtmlAnnotationExporter annotationExporterHtml = new HtmlAnnotationExporter(targetDir);
-    
-    
+
+    HtmlAnnotationExporter annotationExporterHtml = new HtmlAnnotationExporter(
+        targetDir);
+
     List<Future<Object>> encodingTasks = new ArrayList<Future<Object>>(
         annotationFiles.length);
-    
+
     ScenarioAnnotationsDto dto;
-    
+
     File videoInputFile;
     File videoOutputFile;
-    
-    for (File annotationFile : annotationFiles) {    
-      
+
+    for (File annotationFile : annotationFiles) {
+
       dto = AnnotationFileParserFactory.getFileParser(annotationFile).parse();
-       
+
       videoInputFile = new File(annotationFile.getParentFile(),
           dto.getNameVideoFile());
 
@@ -96,19 +100,18 @@ public class HtmlConverter{
             + annotationFile.getAbsolutePath()
             + " doesn´t match to refered VideoFile " + videoInputFile.getName());
       }
-      
+
       videoOutputFile = new File(targetDir,
           FilenameUtils.removeExtension(videoInputFile.getName()) + ".mp4");
       encodingTasks.add(encodingThreadPool
           .submit(new FfmpegCommandLineH264Encoder(videoInputFile,
               videoOutputFile)));
-      
+
       dto.setNameVideoFile(videoOutputFile.getName());
       annotationExporterHtml.write(dto);
-      
 
     }
-    
+
     encodingThreadPool.shutdown();
 
     for (Future<Object> encodingTask : encodingTasks) {
@@ -116,7 +119,18 @@ public class HtmlConverter{
     }
 
     encodingThreadPool.awaitTermination(15, TimeUnit.MINUTES);
-    
+
+  }
+
+  public static void main(String args[]) throws Throwable {
+    if (args.length != 2) {
+      throw new IllegalArgumentException(
+          "Misconfiguration: <scanDirectory> <targetDirectory");
+    }
+    new HtmlConverter(
+        new File(args[0]), 
+        new File(args[1])
+        ).convert();
   }
 
 }
