@@ -63,7 +63,7 @@ public class HtmlConverter {
    *           - IOErrors
    */
   public void convert() throws Throwable {
-
+ 
     File[] annotationFiles = Helper.getAnnotationFilesInDirectory(scanDir);
 
     BlockingQueue<Runnable> encodingQueue = new ArrayBlockingQueue<Runnable>(
@@ -83,12 +83,12 @@ public class HtmlConverter {
     File videoOutputFile;
 
     for (File annotationFile : annotationFiles) {
-
+      System.out.println("Parsing : " + annotationFile.getName());
       dto = AnnotationFileParserFactory.getFileParser(annotationFile).parse();
-
+      
       videoInputFile = new File(annotationFile.getParentFile(),
           dto.getNameVideoFile());
-
+        
       if (!videoInputFile.exists()) {
         throw new FileNotFoundException(
             "Could not find videoReferenceFile for " + annotationFile);
@@ -100,15 +100,18 @@ public class HtmlConverter {
             + annotationFile.getAbsolutePath()
             + " doesn´t match to refered VideoFile " + videoInputFile.getName());
       }
-
+      System.out.println("Encoding: " + videoInputFile.getName());
       videoOutputFile = new File(targetDir,
           FilenameUtils.removeExtension(videoInputFile.getName()) + ".mp4");
       encodingTasks.add(encodingThreadPool
           .submit(new FfmpegCommandLineH264Encoder(videoInputFile,
               videoOutputFile)));
 
+      
       dto.setNameVideoFile(videoOutputFile.getName());
+
       annotationExporterHtml.write(dto);
+
 
     }
 
