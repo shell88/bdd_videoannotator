@@ -36,6 +36,16 @@ public class HtmlConverter {
    * @param targetDir
    *          - TargetDirectory where to store the HTMLReport.
    */
+  public HtmlConverter(String scanDir, String targetDir){
+      this(new File(scanDir),new File(targetDir));
+  }
+  
+  /**
+   * @param scanDir
+   *          - Directory to search for AnnoationFiles.
+   * @param targetDir
+   *          - TargetDirectory where to store the HTMLReport.
+   */
   public HtmlConverter(File scanDir, File targetDir) {
     if (!scanDir.exists()) {
       throw new IllegalArgumentException(scanDir.getAbsolutePath()
@@ -64,6 +74,7 @@ public class HtmlConverter {
    */
   public void convert() throws Throwable {
  
+    System.out.println("----Start converting2html");
     File[] annotationFiles = Helper.getAnnotationFilesInDirectory(scanDir);
 
     BlockingQueue<Runnable> encodingQueue = new ArrayBlockingQueue<Runnable>(
@@ -111,8 +122,7 @@ public class HtmlConverter {
       dto.setNameVideoFile(videoOutputFile.getName());
 
       annotationExporterHtml.write(dto);
-
-
+     
     }
 
     encodingThreadPool.shutdown();
@@ -122,7 +132,7 @@ public class HtmlConverter {
     }
 
     encodingThreadPool.awaitTermination(15, TimeUnit.MINUTES);
-
+    System.out.println("----End of converting2html");
   }
 
   public static void main(String args[]) throws Throwable {

@@ -2,29 +2,28 @@ package stepdefinitions;
 
 import static org.junit.Assert.assertTrue;
 
-import java.io.File;
-
-import stepdef.helper.AssertExtensions;
-import stepdef.helper.TestUtils;
-
-import com.github.shell88.bddvideoannotator.annotationfile.converter.HtmlConverter;
-
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 
+import com.github.shell88.bddvideoannotator.annotationfile.converter.HtmlConverter;
+
+import stepdef.helper.AssertExtensions;
+import stepdef.helper.TestUtils;
+
+import java.io.File;
+
 public class HtmlConverterStepDef {
 
-  private final File testResourcesFolder = new File("src/test/resources/htmlconvertertest");
+  private final File testResourcesFolder = new File(
+      "src/test/resources/htmlconvertertest");
   private final File outputDirectory;
-  private HtmlConverter converter;
 
   public HtmlConverterStepDef() {
     outputDirectory = TestUtils.getNewSubTestDirectory();
   }
-  
-  private int cntResourceFiles = 0;
 
+  private int cntResourceFiles = 0;
 
   @Given("^I have a folder with annotation files and videos from the annotation server$")
   public void i_have_a_folder_with_annotation_files_and_videos_from_the_annotation_server()
@@ -35,9 +34,8 @@ public class HtmlConverterStepDef {
   }
 
   @When("^I convert these to HTML$")
-  public void i_convert_these_to_HTML() throws Throwable {  
-    converter = new HtmlConverter(testResourcesFolder, outputDirectory);
-    converter.convert();
+  public void i_convert_these_to_HTML() throws Throwable {
+    new HtmlConverter(testResourcesFolder, outputDirectory).convert();
   }
 
   @Then("^I should get an index\\.html including all stepdata and html5-compatible videos\\.$")

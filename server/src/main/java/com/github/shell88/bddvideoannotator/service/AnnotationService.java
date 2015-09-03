@@ -31,8 +31,8 @@ import javax.xml.ws.WebServiceException;
 public class AnnotationService {
 
   private AnnotationExporter annotationExporter;
-
-  private ScenarioAnnotationsDto currentScenario;
+  
+  private ScenarioAnnotationsDto currentScenario = new ScenarioAnnotationsDto();
  
   /**
    * The systemTimestamp when the scenario was started using
@@ -125,8 +125,6 @@ public class AnnotationService {
 
   @WebMethod(operationName = "startScenario")
   public void startScenario(@WebParam(name = "scenarioName") String scenarioName) {
-    currentScenario = new ScenarioAnnotationsDto();
-   
     if(!currentScenario.hasStepAnnotations()){
        resultPos = 0;
        currentEndTimestamp = scenarioStartTimestamp = System.currentTimeMillis();
@@ -147,6 +145,7 @@ public class AnnotationService {
     }
 
     this.writeAnnotationFile();
+    currentScenario = new ScenarioAnnotationsDto();
   }
 
   /**
