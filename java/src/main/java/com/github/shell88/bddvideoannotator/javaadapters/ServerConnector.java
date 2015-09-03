@@ -1,9 +1,11 @@
 package com.github.shell88.bddvideoannotator.javaadapters;
 
+import com.github.shell88.bddvideoannotator.annotationfile.converter.HtmlConverter;
 import com.github.shell88.bddvideoannotator.stubjava.AnnotationService;
 import com.github.shell88.bddvideoannotator.stubjava.AnnotationServiceService;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -13,6 +15,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.file.Paths;
 import java.util.Properties;
+
 import javax.xml.ws.BindingProvider;
 
 
@@ -31,6 +34,7 @@ public class ServerConnector {
   private String videoWidth;
   private String videoHeight;
   private String outputDirectory;
+  private Boolean convert2html;
 
   /**
    * Initializes ServerConnector with Properties from properties_file.
@@ -42,6 +46,7 @@ public class ServerConnector {
     videoWidth = properties.getProperty("video_width");
     videoHeight = properties.getProperty("video_height");
     outputDirectory = properties.getProperty("output_directory");
+    convert2html = Boolean.valueOf(properties.getProperty("convert2html"));
   }
 
   /**
@@ -89,7 +94,8 @@ public class ServerConnector {
       Runtime.getRuntime().addShutdownHook(new Thread() {
         public void run() {
           try {
-            stopServerProcess();
+            stopServerProcess();           
+            convert2HtmlIfSet();
           } catch (Exception e) {
             e.printStackTrace();
           }
@@ -173,8 +179,23 @@ public class ServerConnector {
 
     serverProcess.destroy();
 
+    
+    
     return isProcessTerminated(2);
 
+  }
+  
+  /**
+   * Converts all file to an html-report from {@link #outputDirectory} into a subfolder.
+   * Requires ffmpeg to be installed and available on the system path.
+   */
+  public synchronized void convert2HtmlIfSet(){
+      if(!convert2html) return;
+      try {
+        new HtmlConverter(this.outputDirectory, this.outputDirectory + File.separator + "html").convert();
+      } catch (Throwable e) {
+        throw new ServerConnectorException("Could not convert to html " + e.getMessage());
+      }
   }
 
   /**
@@ -264,6 +285,9 @@ public class ServerConnector {
     return buffer.toString();
 
   }
+  
+  
+   
 
   /**
    * Converts an InputStream to a single String.

@@ -74,9 +74,13 @@ public class HtmlConverter {
    */
   public void convert() throws Throwable {
  
-    System.out.println("----Start converting2html");
+    System.out.println("----Start converting2html inputDirectory: " + scanDir.getAbsolutePath() + " target " + this.targetDir.getAbsolutePath());
+    
     File[] annotationFiles = Helper.getAnnotationFilesInDirectory(scanDir);
-
+    if(annotationFiles.length == 0){
+        System.out.println("No annotation files found => exit");
+        return;
+    }
     BlockingQueue<Runnable> encodingQueue = new ArrayBlockingQueue<Runnable>(
         annotationFiles.length);
     ThreadPoolExecutor encodingThreadPool = new ThreadPoolExecutor(4, 4, 30,
