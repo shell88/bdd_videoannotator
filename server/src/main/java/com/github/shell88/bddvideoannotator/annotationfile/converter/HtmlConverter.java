@@ -24,7 +24,7 @@ import java.util.concurrent.TimeUnit;
  * @author Hell
  * 
  */
-
+//FIXME: fix linking of steps to video in Internet Explorer (media fragments)
 public class HtmlConverter {
 
   private File scanDir;
