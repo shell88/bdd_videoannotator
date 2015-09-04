@@ -125,9 +125,9 @@ public class AnnotationService {
 
   @WebMethod(operationName = "startScenario")
   public void startScenario(@WebParam(name = "scenarioName") String scenarioName) {
-    if(!currentScenario.hasStepAnnotations()){
-       resultPos = 0;
-       currentEndTimestamp = scenarioStartTimestamp = System.currentTimeMillis();
+    if (!currentScenario.hasStepAnnotations()) {
+      resultPos = 0;
+      currentEndTimestamp = scenarioStartTimestamp = System.currentTimeMillis();
     }
     currentScenario.setScenarioText(scenarioName);
     startVideoRecording();
@@ -294,7 +294,8 @@ public class AnnotationService {
   @WebMethod(operationName = "addResultToBufferStep")
   public void addResultToBufferStep(@WebParam(name = "result") StepResult result) {
 
-    if (!currentScenario.hasStepAnnotations() || currentScenario.getStepAnnotation(resultPos) == null) {
+    if (!currentScenario.hasStepAnnotations() 
+        || currentScenario.getStepAnnotation(resultPos) == null) {
       return;
     }
 
@@ -343,20 +344,16 @@ public class AnnotationService {
 
   /**
    * Starts the server process with the given arguments.
-   * 
    * @param config
-   *          Configuration-Array that need the following parameters: 0
-   *          Publishing address for the SOAP-service 1 Output-Directory where
-   *          to store the annotation-files/video-files 2 Video-with for the
-   *          capturing area 3 Video-height for the capturing area If the
-   *          capturing area is invalid, no video recording will be started.
+   *        0 - Publishing address for the SOAP-service 1 - Output-Directory where to store the
+   *        annotation-files/video-files 2 - Video-with for the capturing area 3 - Video-height for
+   *        the capturing area
    */
 
   public static void main(String[] config) {
     if (config.length < 4) {
-      throw new IllegalArgumentException(
-          "Misconfiguration, parameters to set: "
-              + "<publish_adress> <outputDirectory>, <video_width>, <video_height>");
+      throw new IllegalArgumentException("Misconfiguration, parameters to set: "
+          + "<publish_adress> <outputDirectory>, <video_width>, <video_height>");
     }
 
     final AnnotationService service = new AnnotationService(config[1],

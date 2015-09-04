@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+
 import com.github.shell88.bddvideoannotator.annotationfile.converter.GsonEscapeStringSerializer;
 
 import org.apache.commons.io.FileUtils;
@@ -16,14 +17,12 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.util.Enumeration;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 /**
- * Exports Anntoations to a HTML-Report. The Codec of the video file must be
+ * Exports Annotations to a HTML-Report. The Codec of the video file must be
  * supported by the browser that you want to view with it, see also
  * {@link com.github.shell88.bddvideoannotator.annotationfile.converter.HtmlConverter}
  * Can be used to export multiple Scenarios to a single index.html.
@@ -73,7 +72,6 @@ public class HtmlAnnotationExporter extends AnnotationExporter {
   }
 
   private void copyAssetsToOutputDirectory() throws IOException {
-
    
     URL htmlResourceFolderUrl = ClassLoader
         .getSystemResource(htmlResourcesFolder);
@@ -83,39 +81,36 @@ public class HtmlAnnotationExporter extends AnnotationExporter {
           + htmlResourcesFolder);
     }
     
-    if(htmlResourceFolderUrl.getProtocol().equals("jar")){
+    if (htmlResourceFolderUrl.getProtocol().equals("jar")) {
       //Needed so that converter can also used from the standalone server jar
-      String jarPath = htmlResourceFolderUrl.getPath().substring(5, htmlResourceFolderUrl.getPath().indexOf("!")); //strip out only the JAR file
+      String jarPath = htmlResourceFolderUrl.getPath().substring(5,
+          htmlResourceFolderUrl.getPath().indexOf("!")); //strip out only the JAR file
       JarFile jar = new JarFile(URLDecoder.decode(jarPath, "UTF-8"));
       Enumeration<JarEntry> entries = jar.entries(); //gives ALL entries in jar
       JarEntry entry;
-      while(entries.hasMoreElements()) {
-        entry= entries.nextElement();
-        if(!entry.isDirectory() && entry.getName().startsWith(htmlResourcesFolder)){
-            InputStream in = jar.getInputStream(entry);
-            FileUtils.copyInputStreamToFile(in, new File(getOutputDirectory(), entry.getName().replaceFirst(htmlResourcesFolder, "")));
+      while (entries.hasMoreElements()) {
+        entry = entries.nextElement();
+        if (!entry.isDirectory() && entry.getName().startsWith(htmlResourcesFolder)) {
+          InputStream in = jar.getInputStream(entry);
+          FileUtils.copyInputStreamToFile(in, new File(getOutputDirectory(), entry.getName()
+              .replaceFirst(htmlResourcesFolder, "")));
         }
-       
       }
       jar.close();
       assetsCopied = true;
-    }
-    else{
-    
-    
-    File htmlResource;
-    try {
-      htmlResource = new File(htmlResourceFolderUrl.toURI());
-      if (htmlResource.list().length == 0) {
-        throw new IOException(this.htmlResourcesFolder + " is empty!");
+    } else {
+      File htmlResource;
+      try {
+        htmlResource = new File(htmlResourceFolderUrl.toURI());
+        if (htmlResource.list().length == 0) {
+          throw new IOException(this.htmlResourcesFolder + " is empty!");
+        }
+        FileUtils.copyDirectory(htmlResource, this.getOutputDirectory());
+      } catch (URISyntaxException e) {
+        throw new IOException("Cannot read htmlResourceFolder: " + e.getMessage());
       }
-      FileUtils.copyDirectory(htmlResource, this.getOutputDirectory());
-    } catch (URISyntaxException e) {
-      throw new IOException("Cannot read htmlResourceFolder: " + e.getMessage());
-    }
       assetsCopied = true;
     }
-
 
   }
 

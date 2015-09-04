@@ -2,14 +2,13 @@ package stepdefinitions;
 
 import static org.junit.Assert.assertTrue;
 
+import com.github.shell88.bddvideoannotator.annotationfile.converter.HtmlConverter;
+import stepdef.helper.AssertExtensions;
+import stepdef.helper.TestUtils;
+
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-
-import com.github.shell88.bddvideoannotator.annotationfile.converter.HtmlConverter;
-
-import stepdef.helper.AssertExtensions;
-import stepdef.helper.TestUtils;
 
 import java.io.File;
 

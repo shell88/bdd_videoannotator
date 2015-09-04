@@ -23,9 +23,8 @@ public class GsonEscapeStringSerializer implements JsonSerializer<String> {
   }
 
   /**
-   * 
    * @param string
-   *          - Json String for GSON.
+   *        - Json String for GSON.
    * @return escaped String for JavaScript.
    */
   public String escapeJs(String string) {

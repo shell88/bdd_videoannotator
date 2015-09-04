@@ -25,6 +25,42 @@ public interface AnnotationService {
 
     /**
      * 
+     * @param path
+     */
+    @WebMethod
+    @Action(input = "http://service.bddvideoannotator.shell88.github.com/AnnotationService/changeOutputDirectoryRequest", output = "http://service.bddvideoannotator.shell88.github.com/AnnotationService/changeOutputDirectoryResponse")
+    public void changeOutputDirectory(
+        @WebParam(name = "path", partName = "path")
+        String path);
+
+    /**
+     * 
+     * @param result
+     */
+    @WebMethod
+    @Action(input = "http://service.bddvideoannotator.shell88.github.com/AnnotationService/addResultToBufferStepRequest", output = "http://service.bddvideoannotator.shell88.github.com/AnnotationService/addResultToBufferStepResponse")
+    public void addResultToBufferStep(
+        @WebParam(name = "result", partName = "result")
+        StepResult result);
+
+    /**
+     * 
+     * @param result
+     * @param datatable
+     * @param steptext
+     */
+    @WebMethod
+    @Action(input = "http://service.bddvideoannotator.shell88.github.com/AnnotationService/addStepWithResultRequest", output = "http://service.bddvideoannotator.shell88.github.com/AnnotationService/addStepWithResultResponse")
+    public void addStepWithResult(
+        @WebParam(name = "steptext", partName = "steptext")
+        String steptext,
+        @WebParam(name = "datatable", partName = "datatable")
+        StringArrayArray datatable,
+        @WebParam(name = "result", partName = "result")
+        StepResult result);
+
+    /**
+     * 
      * @param featureText
      */
     @WebMethod
@@ -62,41 +98,5 @@ public interface AnnotationService {
         String steptext,
         @WebParam(name = "datatable", partName = "datatable")
         StringArrayArray datatable);
-
-    /**
-     * 
-     * @param path
-     */
-    @WebMethod
-    @Action(input = "http://service.bddvideoannotator.shell88.github.com/AnnotationService/changeOutputDirectoryRequest", output = "http://service.bddvideoannotator.shell88.github.com/AnnotationService/changeOutputDirectoryResponse")
-    public void changeOutputDirectory(
-        @WebParam(name = "path", partName = "path")
-        String path);
-
-    /**
-     * 
-     * @param result
-     */
-    @WebMethod
-    @Action(input = "http://service.bddvideoannotator.shell88.github.com/AnnotationService/addResultToBufferStepRequest", output = "http://service.bddvideoannotator.shell88.github.com/AnnotationService/addResultToBufferStepResponse")
-    public void addResultToBufferStep(
-        @WebParam(name = "result", partName = "result")
-        StepResult result);
-
-    /**
-     * 
-     * @param result
-     * @param datatable
-     * @param steptext
-     */
-    @WebMethod
-    @Action(input = "http://service.bddvideoannotator.shell88.github.com/AnnotationService/addStepWithResultRequest", output = "http://service.bddvideoannotator.shell88.github.com/AnnotationService/addStepWithResultResponse")
-    public void addStepWithResult(
-        @WebParam(name = "steptext", partName = "steptext")
-        String steptext,
-        @WebParam(name = "datatable", partName = "datatable")
-        StringArrayArray datatable,
-        @WebParam(name = "result", partName = "result")
-        StepResult result);
 
 }

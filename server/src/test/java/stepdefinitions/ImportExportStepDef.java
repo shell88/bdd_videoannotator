@@ -1,24 +1,22 @@
 package stepdefinitions;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import stepdef.helper.TestUtils;
-import static stepdef.helper.AssertExtensions.assertActualResultStepEquals;
 import static org.junit.Assert.assertEquals;
+import static stepdef.helper.AssertExtensions.assertActualResultStepEquals;
 
 import com.github.shell88.bddvideoannotator.annotationfile.exporter.EafAnnotationExporter;
 import com.github.shell88.bddvideoannotator.annotationfile.exporter.ScenarioAnnotationsDto;
+import com.github.shell88.bddvideoannotator.annotationfile.exporter.StepAnnotation;
 import com.github.shell88.bddvideoannotator.annotationfile.exporter.StepResult;
+import com.github.shell88.bddvideoannotator.annotationfile.parser.AnnotationFileParserFactory;
+import com.github.shell88.bddvideoannotator.annotationfile.parser.ExpectedResultStep;
+import stepdef.helper.TestUtils;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.When;
 
-import com.github.shell88.bddvideoannotator.annotationfile.exporter.StepAnnotation;
-import com.github.shell88.bddvideoannotator.annotationfile.parser.AnnotationFileParser;
-import com.github.shell88.bddvideoannotator.annotationfile.parser.AnnotationFileParserFactory;
-import com.github.shell88.bddvideoannotator.annotationfile.parser.ExpectedResultStep;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ImportExportStepDef {
 

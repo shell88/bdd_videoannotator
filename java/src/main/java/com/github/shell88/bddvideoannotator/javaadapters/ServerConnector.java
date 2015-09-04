@@ -1,6 +1,7 @@
 package com.github.shell88.bddvideoannotator.javaadapters;
 
 import com.github.shell88.bddvideoannotator.annotationfile.converter.HtmlConverter;
+
 import com.github.shell88.bddvideoannotator.stubjava.AnnotationService;
 import com.github.shell88.bddvideoannotator.stubjava.AnnotationServiceService;
 
@@ -189,13 +190,16 @@ public class ServerConnector {
    * Converts all file to an html-report from {@link #outputDirectory} into a subfolder.
    * Requires ffmpeg to be installed and available on the system path.
    */
-  public synchronized void convert2HtmlIfSet(){
-      if(!convert2html) return;
-      try {
-        new HtmlConverter(this.outputDirectory, this.outputDirectory + File.separator + "html").convert();
-      } catch (Throwable e) {
-        throw new ServerConnectorException("Could not convert to html " + e.getMessage());
-      }
+  public synchronized void convert2HtmlIfSet() {
+    if (!convert2html) {
+      return;
+    }
+    try {
+      new HtmlConverter(this.outputDirectory, this.outputDirectory + File.separator + "html")
+          .convert();
+    } catch (Throwable e) {
+      throw new ServerConnectorException("Could not convert to html " + e.getMessage());
+    }
   }
 
   /**
@@ -204,7 +208,7 @@ public class ServerConnector {
    * 
    * @param waitSeconds
    *          timeout
-   * @return true if the process has exited successfully
+   * @return true when the process has exited successfully
    */
   private boolean isProcessTerminated(int waitSeconds) {
     int sleepMilliseconds = 10;

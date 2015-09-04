@@ -6,12 +6,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static stepdef.helper.AssertExtensions.assertActualResultStepEquals;
 import static stepdef.helper.AssertExtensions.assertDurationEquals;
-
-import java.io.File;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import stepdef.helper.TestUtils;
+import static stepdef.helper.TestUtils.getLatestAnnotationOutputFileInDirectory;
+import static stepdef.helper.TestUtils.getNewSubTestDirectory;
+import static stepdef.helper.TestUtils.getVideoFilesInDirectory;
 
 import com.github.shell88.bddvideoannotator.annotationfile.exporter.ScenarioAnnotationsDto;
 import com.github.shell88.bddvideoannotator.annotationfile.exporter.StepAnnotation;
@@ -22,8 +19,15 @@ import com.github.shell88.bddvideoannotator.service.AnnotationService;
 import com.xuggle.xuggler.IContainer;
 
 import cucumber.api.DataTable;
+
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+
+import java.io.File;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
+
 
 public class WorkflowStepDef {
 
@@ -39,7 +43,7 @@ public class WorkflowStepDef {
    * @throws Throwable when subtestDirectory could not be generated.
    */
   public WorkflowStepDef() throws Throwable {
-    outputDirectory = TestUtils.getNewSubTestDirectory();
+    outputDirectory = getNewSubTestDirectory();
     serverInstance = new AnnotationService(outputDirectory.getAbsolutePath(),
         "full", "full");
   }
@@ -116,8 +120,7 @@ public class WorkflowStepDef {
   @Then("^I should get a video file named with the scenario name$")
   public void i_should_get_a_video_file_named_with_the_scenario_name()
       throws Throwable {
-    File[] videoFileList = TestUtils
-        .getVideoFilesInDirectory(this.outputDirectory);
+    File[] videoFileList = getVideoFilesInDirectory(this.outputDirectory);
     assertTrue(videoFileList.length > 0);
     for (File videoFile : videoFileList) {
       if (videoFile.getName().startsWith(expectedScenario.getScenarioText())) {
@@ -131,8 +134,7 @@ public class WorkflowStepDef {
   
   @Then("^I should get an annotation file named with the scenario name$")
   public void i_should_get_an_annotation_file_named_with_the_scenario_name() throws Throwable {
-    annotationOutputFile = TestUtils
-        .getLatestAnnotationOutputFileInDirectory(outputDirectory);
+    annotationOutputFile = getLatestAnnotationOutputFileInDirectory(outputDirectory);
     assertTrue(annotationOutputFile != null
         && annotationOutputFile.getName().startsWith(expectedScenario.getScenarioText()));
   }

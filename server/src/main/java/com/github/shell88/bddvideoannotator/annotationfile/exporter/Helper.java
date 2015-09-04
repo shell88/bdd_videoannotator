@@ -48,7 +48,7 @@ public class Helper {
   
   /**
    * Returns all AnnotationFiles in a directory based on the supported
-   * FileExtensions specified in @see SupportedAnnotationFileExtension.
+   * FileExtensions specified in {@link SupportedAnnotationFileExtension}
    * 
    * @param directory
    *          - directory to search for annotation files

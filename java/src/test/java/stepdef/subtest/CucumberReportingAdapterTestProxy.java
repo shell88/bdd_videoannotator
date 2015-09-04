@@ -23,10 +23,18 @@ import java.util.List;
  *
  */
 
+/*TODO: simplify design of redirects to underlying instance
+        maybe a Mediator can match the corresponding methods
+*/
 public class CucumberReportingAdapterTestProxy implements Reporter, Formatter {
 
   private static CucumberReportingAdapter testMock;
-  //IDEE: mit MEDIATOR pattern vereinfachen? zuordnung submethode aufrufmethode
+  
+  /**
+   * Initializes the Testproxy from the SubTest.
+   * A concrete adapter instance must be set before
+   * {@link #setUnderlyingInstance(CucumberReportingAdapter)}
+   */
   public CucumberReportingAdapterTestProxy() {
     if (testMock == null) {
       throw new RuntimeException("No Adapter instance for proxy set!");

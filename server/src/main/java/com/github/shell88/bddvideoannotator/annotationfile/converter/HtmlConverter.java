@@ -36,7 +36,7 @@ public class HtmlConverter {
    * @param targetDir
    *          - TargetDirectory where to store the HTMLReport.
    */
-  public HtmlConverter(String scanDir, String targetDir){
+  public HtmlConverter(String scanDir, String targetDir) {
       this(new File(scanDir),new File(targetDir));
   }
   
@@ -74,12 +74,13 @@ public class HtmlConverter {
    */
   public void convert() throws Throwable {
  
-    System.out.println("----Start converting2html inputDirectory: " + scanDir.getAbsolutePath() + " target " + this.targetDir.getAbsolutePath());
-    
+    System.out.println("----Start converting2html inputDirectory: " + scanDir.getAbsolutePath()
+        + " target " + this.targetDir.getAbsolutePath());
+
     File[] annotationFiles = Helper.getAnnotationFilesInDirectory(scanDir);
-    if(annotationFiles.length == 0){
-        System.out.println("No annotation files found => exit");
-        return;
+    if (annotationFiles.length == 0) {
+      System.out.println("No annotation files found => exit");
+      return;
     }
     BlockingQueue<Runnable> encodingQueue = new ArrayBlockingQueue<Runnable>(
         annotationFiles.length);
@@ -139,7 +140,17 @@ public class HtmlConverter {
     System.out.println("----End of converting2html");
   }
 
-  public static void main(String args[]) throws Throwable {
+  /**
+   * Runs HtmlConverter from the command line (used in standalone_server).
+   * Requires ffmpeg to be installed and available on the system path.
+   * 
+   * @param args 0: directory to scan for eaf/avi files
+   *        args 1: target directory for the html report
+   * @throws Throwable when something with the annotationfiles is wrong
+   *         or encoding with ffmpeg did not work
+   */
+  
+  public static void main(String[] args) throws Throwable {
     if (args.length != 2) {
       throw new IllegalArgumentException(
           "Misconfiguration: <scanDirectory> <targetDirectory");
