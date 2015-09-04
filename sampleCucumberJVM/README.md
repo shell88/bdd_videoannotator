@@ -8,14 +8,14 @@ with Cucumber JVM (Java). It searches for the project on github using Google. Th
 - Maven 3.2.5 (other versions may also work)
   * set also Maven to PATH (check with `mvn --version`)
 - Libraries from bdd_videoannotator:
-  * Download [bdd-videoannotator-server 0.1-beta.2](https://github.com/shell88/bdd_videoannotator/releases/download/v0.1-beta.2/bdd-videoannotator-server-0.1.jar) 
-  * Download [bdd-videoannotator-java 0.1-beta.2](https://github.com/shell88/bdd_videoannotator/releases/download/v0.1-beta.2/bdd-videoannotator-java-0.1.jar)
+  * Download [bdd-videoannotator-server 0.1-beta.3](https://github.com/shell88/bdd_videoannotator/releases/download/v0.1-beta.3/bdd-videoannotator-server-0.1-beta.3.jar) 
+  * Download [bdd-videoannotator-java 0.1-beta.3](https://github.com/shell88/bdd_videoannotator/releases/download/v0.1-beta.3/bdd-videoannotator-java-0.1-beta.3.jar)
  * Install to local repository
 ```sh
- mvn install:install-file -Dfile=bdd-videoannotator-server-0.1.jar -DgroupId=com.github.shell88 -DartifactId=bdd-videoannotator-server -Dversion=0.1-beta.2 -Dpackaging=jar
+ mvn install:install-file -Dfile=bdd-videoannotator-server-0.1-beta.3.jar -DgroupId=com.github.shell88 -DartifactId=bdd-videoannotator-server -Dversion=0.1-beta.3 -Dpackaging=jar
 ```
 ```sh
-mvn install:install-file -Dfile=bdd-videoannotator-java-0.1.jar -DgroupId=com.github.shell88 -DartifactId=bdd-videoannotator-java -Dversion=0.1-beta.2 -Dpackaging=jar
+mvn install:install-file -Dfile=bdd-videoannotator-java-0.1-beta.3.jar -DgroupId=com.github.shell88 -DartifactId=bdd-videoannotator-java -Dversion=0.1-beta.3 -Dpackaging=jar
 ```
 - Firefox Browser installed (Will be used by Selenium WebDriver; Tested Version 37.0.1)
 
